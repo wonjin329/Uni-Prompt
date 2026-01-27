@@ -109,14 +109,16 @@ h1 {
   margin-bottom: 25px;
 }
 
-.choice-section h3 {
+.choice-section h3, .choice-section > label {
   font-size: 1.2em;
   color: #444;
   margin-bottom: 15px;
   text-align: center;
+  display: block;
+  font-weight: 500;
 }
 
-/* New Hybrid Styles */
+/* Hybrid (Button + Select) Styles */
 .hybrid-options {
   display: flex;
   gap: 10px;
@@ -149,7 +151,7 @@ h1 {
   flex-grow: 1; /* Dropdown takes remaining space */
 }
 
-/* Full-width select */
+/* Select Elements */
 .choice-select, .choice-select-hybrid {
   width: 100%;
   padding: 12px;
@@ -170,6 +172,36 @@ h1 {
   outline: none;
 }
 
+/* Checkbox Styles (Step 3) */
+.checkbox-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fafafa;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.checkbox-label:hover {
+  background-color: #f0f0f0;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-right: 10px;
+  transform: scale(1.1);
+  accent-color: #3f51b5;
+}
+
+/* Custom Input Fields */
 .custom-input {
   display: none; /* Hidden by default */
   width: 100%;
@@ -185,6 +217,7 @@ h1 {
   animation: fadeIn 0.5s ease;
 }
 
+
 /* --- Form (Step 3) --- */
 .form-container {
   display: flex;
@@ -192,7 +225,7 @@ h1 {
   gap: 15px;
 }
 
-.form-container label {
+.form-container > label {
   font-weight: 500;
   color: #333;
 }
