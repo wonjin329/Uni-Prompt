@@ -1,1 +1,313 @@
-/* Add styles here */
+/* --- General & Reset --- */
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  background-color: #f0f4f8; /* Lighter, cooler background */
+  color: #333;
+  line-height: 1.6;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: 1em;
+}
+
+/* --- Main Container & Header --- */
+.container {
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  padding: 30px 40px;
+  box-sizing: border-box;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 20px;
+}
+
+h1 {
+  color: #1a237e; /* Deep indigo */
+  font-weight: 700;
+  font-size: 2.2em;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 1.1em;
+  color: #555;
+  margin: 5px 0 0;
+}
+
+/* --- Steps Indicator --- */
+.steps-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.step-marker {
+  font-size: 0.9em;
+  color: #888;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background-color: #f1f1f1;
+  transition: all 0.3s ease;
+}
+
+.step-marker.active {
+  background-color: #3f51b5; /* Indigo */
+  color: #fff;
+  font-weight: 700;
+}
+
+.step-connector {
+  flex-grow: 1;
+  height: 2px;
+  background-color: #e0e0e0;
+  margin: 0 10px;
+}
+
+/* --- Step Content --- */
+.step {
+  display: none; /* Hidden by default */
+  padding: 20px 0;
+  animation: fadeIn 0.5s ease;
+}
+
+.step.active {
+  display: block; /* Shown when active */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step h2 {
+  font-size: 1.5em;
+  color: #333;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* --- Choice & Form Sections --- */
+.choice-section {
+  margin-bottom: 25px;
+}
+
+.choice-section h3 {
+  font-size: 1.2em;
+  color: #444;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* New Hybrid Styles */
+.hybrid-options {
+  display: flex;
+  gap: 10px;
+}
+
+.option-btn {
+  padding: 10px 15px;
+  border: 2px solid #ddd;
+  background-color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+.option-btn:hover {
+  border-color: #3f51b5;
+  color: #3f51b5;
+}
+
+.option-btn.selected {
+  background-color: #e8eaf6; /* Light indigo */
+  border-color: #3f51b5;
+  color: #1a237e;
+  font-weight: 700;
+}
+
+.choice-select-hybrid {
+  flex-grow: 1; /* Dropdown takes remaining space */
+}
+
+/* Full-width select */
+.choice-select, .choice-select-hybrid {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.choice-select:focus, .choice-select-hybrid:focus {
+  border-color: #3f51b5;
+  outline: none;
+}
+
+.custom-input {
+  display: none; /* Hidden by default */
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #3f51b5; /* Highlight as it's a special input */
+  border-radius: 6px;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.custom-input.visible {
+  display: block; /* Shown when JS adds this class */
+  animation: fadeIn 0.5s ease;
+}
+
+/* --- Form (Step 3) --- */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-container label {
+  font-weight: 500;
+  color: #333;
+}
+
+.form-container input[type="text"], .form-container textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.form-container input[type="text"]:focus, .form-container textarea:focus {
+  border-color: #3f51b5;
+  outline: none;
+}
+
+.form-container textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* --- Navigation & Output --- */
+.navigation-btns {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.navigation-btns .back-btn {
+  margin-right: auto; /* Pushes back button to the left */
+}
+
+.nav-btn {
+  background-color: #3f51b5;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1em;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav-btn:hover {
+  background-color: #303f9f; /* Darker indigo */
+}
+
+.nav-btn.back-btn {
+  background-color: #78909c; /* Blue grey */
+}
+
+.nav-btn.back-btn:hover {
+  background-color: #546e7a;
+}
+
+.output-section {
+  margin-top: 40px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 30px;
+}
+
+.output-section h2 {
+  text-align: center;
+  color: #1a237e;
+  margin-bottom: 20px;
+}
+
+.prompt-display {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  min-height: 150px;
+  font-family: 'D2 Coding', 'Fira Code', 'Lucida Console', Monaco, monospace;
+  font-size: 0.95em;
+  color: #2c3e50;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  border: 1px solid #eee;
+}
+
+#copyButton {
+  display: block;
+  width: auto;
+  margin: 20px auto 0;
+  padding: 12px 25px;
+  background-color: #4caf50; /* Green */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 700;
+}
+
+#copyButton:hover {
+  background-color: #388e3c; /* Darker green */
+  transform: translateY(-2px);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+  .container {
+    padding: 20px;
+  }
+  .steps-indicator {
+    font-size: 0.8em;
+  }
+  h1 { font-size: 1.8em; }
+  .step h2 { font-size: 1.3em; }
+}
