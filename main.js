@@ -14,9 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- 2. DOM ELEMENTS ---
   const steps = document.querySelectorAll('.step');
   const stepMarkers = document.querySelectorAll('.step-marker');
-  const navButtons = document.querySelectorAll('.nav-btn');
+  const nextTo2Btn = document.getElementById('next-to-2');
+  const nextTo3Btn = document.getElementById('next-to-3');
+  const backTo1Btn = document.getElementById('back-to-1');
+  const backTo2Btn = document.getElementById('back-to-2');
   const generatedPromptEl = document.getElementById('generatedPrompt');
   const copyButton = document.getElementById('copyButton');
+  const outputSection = document.querySelector('.output-section');
   const formInputs = document.querySelectorAll('#topic, #keywords, #references');
   const hybridOptionGroups = document.querySelectorAll('.hybrid-options');
   const customInputs = document.querySelectorAll('.custom-input');
@@ -34,7 +38,17 @@ document.addEventListener('DOMContentLoaded', () => {
     authorLevel: { 'high-school': '고등학생', 'undergrad-freshman': '1-2학년 학부생', 'undergrad-senior': '3-4학년 학부생', 'master': '석사 과정생', 'doctor': '박사 과정생' },
     tone: { 'academic': '학술적 스타일', 'explanatory': '설명적 스타일', 'critical': '비평적 스타일', 'persuasive': '설득적 스타일', 'creative': '창의적 스타일' },
     assignmentType: { 'report': '리포트', 'ppt': 'PPT 개요', 'summary': '논문 요약/분석', 'problem-solving': '연습문제 풀이', 'brainstorming': '브레인스토밍', 'proofreading': '글 교정', 'lab-report': '실험 보고서', 'cover-letter': '자기소개서' },
-    emphasis: { 'case-study': '사례 위주로 작성', 'personal-thoughts': '개인적인 생각/느낀점 포함', 'citation-apa': '출처 표기 필수 (APA 형식)', 'word-count': '분량 엄수', 'quantitative': '정량적 데이터 포함', 'compare-contrast': '두 가지 관점 비교/대조'}
+    emphasis: { 
+      'case-study': '사례 위주로 작성', 
+      'personal-thoughts': '개인적인 생각/느낀점 포함', 
+      'citation-apa': '출처 표기 필수 (APA 형식)', 
+      'word-count': '분량 엄수', 
+      'quantitative': '정량적 데이터 포함', 
+      'compare-contrast': '두 가지 관점 비교/대조',
+      'latest-research': '최신 연구 동향 반영', 
+      'theoretical-background': '이론적 배경 강화', 
+      'data-statistics': '구체적인 데이터 및 통계 활용'
+    }
   };
   
   const promptBlocks = {
@@ -157,22 +171,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   emphasisGroup.addEventListener('change', (e) => {
     if (e.target.matches('input[type="checkbox"]')) {
+      if (e.target.value === 'custom') {
+        const customInput = document.getElementById('emphasisCustom');
+        customInput.classList.toggle('visible', e.target.checked);
+        if (!e.target.checked) {
+          customInput.value = '';
+          promptState.emphasis.custom = '';
+        }
+      }
       if (e.target.checked) {
         promptState.emphasis.selected.add(e.target.value);
       } else {
         promptState.emphasis.selected.delete(e.target.value);
       }
-    } else if (e.target.matches('#emphasisSelect')) {
-      const select = e.target;
-      const customInput = document.getElementById('emphasisCustom');
-      const isCustom = select.value === 'custom';
-      customInput.classList.toggle('visible', isCustom);
-      if (isCustom) { customInput.focus(); }
-      else { customInput.value = ''; promptState.emphasis.custom = ''; }
-      
-      if (select.oldValue && select.oldValue !== 'custom') promptState.emphasis.selected.delete(select.oldValue);
-      if (select.value && !isCustom) promptState.emphasis.selected.add(select.value);
-      select.oldValue = select.value;
     }
     generateFinalPrompt();
   });
@@ -192,16 +203,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const navigateTo = (stepNum) => {
     steps.forEach(step => step.classList.remove('active'));
     document.getElementById(`step-${stepNum}`).classList.add('active');
-    stepMarkers.forEach(marker => marker.classList.toggle('active', marker.dataset.step <= stepNum));
+    
+    stepMarkers.forEach(marker => {
+      marker.classList.toggle('active', marker.dataset.step <= stepNum);
+    });
   };
 
-  navButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      let currentStep = parseInt(document.querySelector('.step.active').id.replace('step-', ''));
-      navigateTo(button.id.includes('next') ? currentStep + 1 : currentStep - 1);
-    });
-  });
-  
+  nextTo2Btn.addEventListener('click', () => navigateTo(2));
+  nextTo3Btn.addEventListener('click', () => navigateTo(3));
+  backTo1Btn.addEventListener('click', () => navigateTo(1));
+  backTo2Btn.addEventListener('click', () => navigateTo(2));
+
   copyButton.addEventListener('click', () => {
     const textToCopy = generatedPromptEl.textContent;
     if (!textToCopy || textToCopy.includes('필요')) {

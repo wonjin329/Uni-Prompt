@@ -175,7 +175,7 @@ h1 {
 /* Checkbox Styles (Step 3) */
 .checkbox-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, 1fr); /* Keep the 2-column grid */
   gap: 10px;
   margin-bottom: 15px;
 }
@@ -291,23 +291,35 @@ h1 {
   padding-top: 30px;
 }
 
+.output-section.active {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
 .output-section h2 {
   text-align: center;
   color: #1a237e;
   margin-bottom: 20px;
+  font-size: 1.8em; /* Slightly larger for prominence */
+  font-weight: 700;
 }
 
 .prompt-display {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  min-height: 150px;
+  background-color: #fcfcfc; /* Lighter background */
+  padding: 30px; /* More generous padding */
+  border-radius: 10px;
+  min-height: 250px; /* Increased min-height */
   font-family: 'D2 Coding', 'Fira Code', 'Lucida Console', Monaco, monospace;
-  font-size: 0.95em;
+  font-size: 1em; /* Slightly larger font */
+  line-height: 1.6; /* Improved line spacing */
   color: #2c3e50;
   white-space: pre-wrap;
-  word-wrap: break-word;
-  border: 1px solid #eee;
+  overflow-wrap: break-word; /* Modern alias for word-wrap */
+  word-break: break-word; /* Ensure long words break */
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  overflow-y: auto; /* Enable vertical scroll if content overflows */
+  max-height: 500px; /* Cap max height to avoid excessive scrolling */
 }
 
 #copyButton {
