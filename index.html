@@ -5,15 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Uni-Prompt: AI 프롬프트 빌더</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href='/style.css' rel='stylesheet'>
+  <link href='/style.css?v=1.4' rel='stylesheet'>
 </head>
 <body>
-  <div class="container">
+  <div id="start-screen" class="container">
+    <div class="start-content">
+      <h1>Uni-Prompt</h1>
+      <p class="subtitle">대학생들의 과제 효율을 극대화할, 'AI 프롬프트 빌더' 서비스 🔥</p>
+      <p class="intro-small">몇 가지 간단한 단계를 통해, AI가 여러분의 과제를 완벽하게 이해하고 최고의 결과물을 만들 수 있도록 맞춤형 프롬프트를 생성해 보세요.</p>
+      <button id="start-btn" class="nav-btn">시작하기</button>
+    </div>
+  </div>
+
+  <div id="main-container" class="container" style="display:none;">
     <div class="header">
       <h1>Uni-Prompt</h1>
-      <p class="subtitle">체계적인 3단계 접근으로 과제 효율을 극대화하세요.</p>
+      <p class="subtitle">대학생들의 과제 효율을 극대화할, 'AI 프롬프트 빌더' 서비스 🔥</p>
     </div>
-
     <div class="steps-indicator">
       <span class="step-marker active" data-step="1">Step 1: 과제 유형</span>
       <span class="step-connector"></span>
@@ -64,6 +72,19 @@
           </select>
         </div>
         <input type="text" id="authorLevelCustom" class="custom-input" placeholder="예: 해당 분야 비전공자">
+      </div>
+      <div class="choice-section">
+        <h3>강의 성격</h3>
+        <div class="hybrid-options" data-group="lectureType">
+          <button class="option-btn" data-value="general">교양</button>
+          <button class="option-btn" data-value="major">전공</button>
+          <button class="option-btn" data-value="seminar">세미나</button>
+          <select class="choice-select-hybrid">
+            <option value="">기타...</option>
+            <option value="custom">직접 입력...</option>
+          </select>
+        </div>
+        <input type="text" id="lectureTypeCustom" class="custom-input" placeholder="예: 온라인 공개강의(MOOC)">
       </div>
       <div class="choice-section">
         <h3>글쓰기 스타일</h3>
@@ -147,6 +168,41 @@
       <button id="copyButton" class="copy-button">프롬프트 복사</button>
     </div>
   </div>
-  <script defer type="text/javascript" src="/main.js"></script>
+
+  <div id="info-wrapper">
+    <div id="about" class="container content-section">
+      <h2>Uni-Prompt, 왜 만들었을까요?</h2>
+      <p>대학생의 삶은 과제의 연속입니다. 하지만 <strong>'좋은 질문'</strong>이 <strong>'좋은 답변'</strong>을 만든다는 사실을 모른 채, 우리는 종종 AI에게 막연한 질문을 던지고는 합니다. "리포트 써줘" 라는 단순한 요청은 기대 이하의 결과로 이어지기 쉽습니다.</p>
+      <p><strong>Uni-Prompt</strong>는 바로 이 문제를 해결하기 위해 탄생했습니다. 저희는 좋은 프롬프트가 과제의 질을 극적으로 향상시킨다는 점에 주목했습니다. 이 서비스는 몇 가지 핵심 정보를 입력하는 것만으로, AI가 학생 여러분의 의도를 정확히 파악하고 전공 지식과 강의 특성까지 고려한 <strong>'개인 맞춤형 프롬프트'</strong>를 생성해 줍니다.</p>
+      <p>더 이상 막막한 과제 앞에서 고민하지 마세요. Uni-Prompt와 함께라면 AI를 여러분의 <strong>'똑똑한 전공 튜터'</strong>로 만들 수 있습니다.</p>
+    </div>
+
+    <div id="how-to" class="container content-section">
+      <h2>어떻게 사용하나요?</h2>
+      <ol>
+        <li><strong>[Step 1] 과제 유형 선택:</strong> 리포트, PPT 개요, 논문 요약 등 여러분이 해야 할 과제의 종류를 명확히 선택합니다.</li>
+        <li><strong>[Step 2] 페르소나 & 스타일 설정:</strong> AI가 여러분의 학년, 전공, 강의 성격, 그리고 원하는 글쓰기 스타일을 이해하도록 <strong>페르소나를 설정합니다.</strong> AI를 <strong>'내 전공을 잘 아는 3학년 선배'</strong>처럼 만드는 과정입니다.</li>
+        <li><strong>[Step 3] 필수 정보 입력:</strong> 과제의 구체적인 주제, 핵심 키워드, 교수님의 강조 사항 등 구체적인 정보를 제공하여 AI의 답변 정확도를 높입니다.</li>
+        <li><strong>프롬프트 생성 및 활용:</strong> 모든 단계를 완료하면, 하단의 '생성된 프롬프트' 섹션에 <strong>최적화된 프롬프트</strong>가 나타납니다. '프롬프트 복사' 버튼을 눌러 ChatGPT, Gemini 등 원하는 AI에 바로 붙여넣고 <strong>놀라운 결과물을 확인해 보세요!</strong></li>
+      </ol>
+    </div>
+
+    <div id="tips" class="container content-section">
+      <h2>AI 활용도를 200% 높이는 프롬프트 엔지니어링 팁</h2>
+      <p><strong>Uni-Prompt</strong>는 좋은 프롬프트의 시작일 뿐입니다. 아래 팁들을 활용하여 AI와 더 깊이 있는 대화를 나눠보세요.</p>
+      <ul>
+        <li><strong>역할을 구체적으로 부여하세요:</strong> 단순히 '전문가'가 아닌 '마케팅 전략을 설명하는 경험 많은 마케터'처럼 구체적인 역할을 부여하면 AI의 답변이 훨씬 더 전문적이고 현실적으로 변합니다.</li>
+        <li><strong>긍정적이고 명확한 언어를 사용하세요:</strong> '~하지 마세요' 같은 부정적인 표현보다는 '~를 포함하여 작성해 주세요'와 같은 긍정적이고 명확한 지시가 더 좋은 결과를 만듭니다.</li>
+        <li><strong>단계별로 질문을 나누세요:</strong> 복잡한 과제는 한 번에 해결하려 하지 말고, '자료 조사', '개요 작성', '초안 작성', '수정' 등 단계별로 나누어 질문하면 AI가 각 단계에 더 집중할 수 있습니다. Uni-Prompt의 <strong>'다음 스텝 제안'</strong> 기능이 좋은 가이드가 될 것입니다.</li>
+        <li><strong>예시를 제공하세요:</strong> 원하는 결과물의 스타일이나 형식이 있다면, 간단한 예시를 함께 제공하는 것이 가장 효과적인 방법 중 하나입니다.</li>
+      </ul>
+    </div>
+
+    <footer>
+      <p>&copy; 2026 Uni-Prompt. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script defer type="text/javascript" src="/main.js?v=1.4"></script>
 </body>
 </html>
