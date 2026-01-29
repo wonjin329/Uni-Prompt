@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
     copyButton.addEventListener('click', () => {
       const textToCopy = generatedPromptEl.textContent;
-      if (!textToCopy || textToCopy.includes('[') || textToCopy.includes(']')) {
+      if (!textToCopy || textToCopy.includes('입력 필요') || textToCopy.includes('선택 필요')) {
         alert('프롬프트의 필수 항목을 모두 채워주세요.');
         return;
       }
@@ -316,12 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    if (toggleInfoBtn) {
-      toggleInfoBtn.addEventListener('click', () => {
-        const isHidden = infoWrapper.classList.toggle('hidden');
-        toggleInfoBtn.textContent = isHidden ? '서비스 정보 및 AI 활용 팁 보기' : '서비스 정보 및 AI 활용 팁 닫기';
-      });
-    }
   };
 
   // --- 5. INITIALIZATION ---
@@ -329,9 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
     startBtn.addEventListener('click', () => {
       startScreen.style.display = 'none';
       mainContainer.style.display = 'block';
+      const infoWrapper = document.getElementById('info-wrapper');
       if (infoWrapper) {
-        infoWrapper.style.display = 'block'; 
-        infoWrapper.classList.add('hidden');
+        infoWrapper.style.display = 'block';
       }
       navigateTo(1);
       generateFinalPrompt();
