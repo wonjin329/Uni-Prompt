@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const emphasisGroup = document.querySelector('[data-group="emphasis"]');
 
   // --- DATA MAPS ---
+
   const dataMaps = {
     authorLevel: { 'high-school': '고등학생', 'undergrad-freshman': '1-2학년', 'undergrad-senior': '3-4학년', 'master': '석사 과정', 'doctor': '박사 과정' },
     lectureType: { 'general': '교양', 'major': '전공', 'seminar': '세미나' },
@@ -53,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-    // --- PROMPT EXAMPLES DATA ---
+  // --- PROMPT EXAMPLES DATA ---
   const promptExamples = {
     reportExample: {
       assignmentType: {value:"report", custom:""},
@@ -90,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+
   // --- 3. CORE FUNCTIONS ---
   const getResolvedValue = (state, key, map) => {
     const stateItem = state[key];
@@ -98,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   const updateStepSummaries = () => {
-    if (!mainContainer.offsetParent) return;
     // Step 1 Summary
     const step1SummaryEl = document.querySelector('.step-marker[data-step="1"] .step-summary');
     const assignmentType = getResolvedValue(promptState, 'assignmentType', dataMaps.assignmentType);
@@ -266,13 +267,204 @@ document.addEventListener('DOMContentLoaded', () => {
       
     const finalPrompt = promptParts.filter(Boolean).join('\n\n');
     generatedPromptEl.textContent = finalPrompt.replace(/(\n\s*){3,}/g, '\n\n').trim();
-
-    // Save to localStorage
-    const serializableState = { ...promptState, emphasis: { ...promptState.emphasis, selected: [...promptState.emphasis.selected] } };
-    localStorage.setItem('uniPromptState', JSON.stringify(serializableState));
   };
 
-  const initializeFormFromState = () => {
+  const handleNavigation = (targetId, contentId) => {
+    // Update nav links
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.dataset.target === targetId && link.dataset.content === contentId);
+    });
+  
+    // Update views
+    views.forEach(view => {
+      view.classList.toggle('active', view.id === targetId);
+    });
+  
+    // Update content sections if content-viewer is active
+    if (targetId === 'content-viewer') { } else if (targetId === 'uni-prompt-app') { initializeFormFromState(); generateFinalPrompt(); }
+    } else if (targetId === 'uni-prompt-app') {
+      contentSections.forEach(section => {
+        section.classList.toggle('active', section.id === `content-${contentId}`);
+      });
+    }
+  };
+
+  const navigateTo = (stepNum) => {
+    steps.forEach(step => step.classList.remove('active'));
+    document.getElementById(`step-${stepNum}`).classList.add('active');
+    
+    stepMarkers.forEach(marker => {
+      const markerStep = parseInt(marker.dataset.step, 10);
+      marker.classList.remove('active', 'completed');
+      if (markerStep < stepNum) {
+        marker.classList.add('completed');
+      } else if (markerStep === stepNum) {
+        marker.classList.add('active');
+      }
+    });
+    updateStepSummaries();
+  };
+
+  // --- 4. EVENT LISTENERS ---
+  const setupEventListeners = () => {
+    mainNav.addEventListener('click', (e) => {
+      e.preventDefault();
+      const link = e.target.closest('.nav-link');
+      if (link) {
+        const targetId = link.dataset.target;
+        const contentId = link.dataset.content || null;
+        handleNavigation(targetId, contentId);
+      }
+    });
+    
+    hybridOptionGroups.forEach(group => {
+      const groupName = group.dataset.group;
+      const buttons = group.querySelectorAll('.option-btn');
+      const select = group.querySelector('.choice-select-hybrid');
+  
+      if (groupName === 'assignmentType') {
+        const defaultButton = group.querySelector(`[data-value="${promptState.assignmentType.value}"]`);
+        if (defaultButton) defaultButton.classList.add('selected');
+      }
+
+      group.addEventListener('click', (e) => {
+        if (e.target.matches('.option-btn')) {
+          promptState[groupName].value = e.target.dataset.value;
+          buttons.forEach(btn => btn.classList.remove('selected'));
+          e.target.classList.add('selected');
+          if(select) select.value = "";
+          const customInput = document.getElementById(`${groupName}Custom`);
+          if(customInput) customInput.classList.remove('visible');
+          promptState[groupName].custom = '';
+        }
+      });
+  
+      if (select) {
+        select.addEventListener('change', () => {
+          promptState[groupName].value = select.value;
+          buttons.forEach(btn => btn.classList.remove('selected'));
+          const customInput = document.getElementById(`${groupName}Custom`);
+          const isCustom = select.value === 'custom';
+          customInput.classList.toggle('visible', isCustom);
+          if (isCustom) { customInput.focus(); } 
+          else { customInput.value = ''; promptState[groupName].custom = ''; }
+        });
+      }
+    });
+  
+    document.querySelectorAll('.choice-select:not(.choice-select-hybrid)').forEach(select => {
+      const groupName = select.id;
+      select.addEventListener('change', () => {
+          promptState[groupName].value = select.value;
+          const customInput = document.getElementById(`${groupName}Custom`);
+          const isCustom = select.value === 'custom';
+          customInput.classList.toggle('visible', isCustom);
+          if (isCustom) { customInput.focus(); } 
+          else { customInput.value = ''; promptState[groupName].custom = ''; }
+      });
+    });
+  
+    customInputs.forEach(input => {
+      const groupName = input.id.replace('Custom', '');
+      input.addEventListener('input', () => {
+        promptState[groupName].custom = input.value;
+      });
+    });
+  
+    emphasisGroup.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="checkbox"]')) {
+        const customInput = document.getElementById('emphasisCustom');
+        if (e.target.value === 'custom') {
+          customInput.classList.toggle('visible', e.target.checked);
+          if (!e.target.checked) {
+            customInput.value = '';
+            promptState.emphasis.custom = '';
+          }
+        }
+        if (e.target.checked) {
+          promptState.emphasis.selected.add(e.target.value);
+        } else {
+          promptState.emphasis.selected.delete(e.target.value);
+        }
+      }
+    });
+    
+    document.getElementById('emphasisCustom').addEventListener('input', (e) => {
+      promptState.emphasis.custom = e.target.value;
+    });
+    
+    formInputs.forEach(input => {
+      input.addEventListener('input', () => {
+        promptState[input.id] = input.value;
+      });
+    });
+    
+    nextTo2Btn.addEventListener('click', () => navigateTo(2));
+    nextTo3Btn.addEventListener('click', () => navigateTo(3));
+    backTo1Btn.addEventListener('click', () => navigateTo(1));
+    backTo2Btn.addEventListener('click', () => navigateTo(2));
+  
+    copyButton.addEventListener('click', () => {
+      const textToCopy = generatedPromptEl.textContent;
+      if (!textToCopy || textToCopy.includes('입력 필요') || textToCopy.includes('선택 필요')) {
+        alert('프롬프트의 필수 항목을 모두 채워주세요.');
+        return;
+      }
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        copyButton.textContent = '복사 완료!';
+        setTimeout(() => { copyButton.textContent = '프롬프트 복사'; }, 2000);
+      });
+    });
+
+    // Event listener for loading example prompts
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('load-example-btn')) { initializeFormFromState(); generateFinalPrompt();
+        const exampleData = JSON.parse(e.target.dataset.example);
+        // Deep copy exampleData into promptState
+        Object.assign(promptState, JSON.parse(JSON.stringify(exampleData)));
+        // Reconstruct Set for emphasis.selected as JSON.parse converts Set to Array
+        if (promptState.emphasis && Array.isArray(promptState.emphasis.selected)) {
+          promptState.emphasis.selected = new Set(promptState.emphasis.selected);
+        }
+
+        handleNavigation('uni-prompt-app', null); // Navigate to prompt builder
+        navigateTo(1); // Go to step 1
+      }
+    });
+
+  };
+
+  // --- 5. INITIALIZATION ---
+  const init = () => {
+    // Load state from local storage
+    const savedState = localStorage.getItem('uniPromptState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      // Reconstruct Set for emphasis.selected
+      if (parsedState.emphasis && Array.isArray(parsedState.emphasis.selected)) {
+        parsedState.emphasis.selected = new Set(parsedState.emphasis.selected);
+      }
+      Object.assign(promptState, parsedState);
+    }
+    
+    startBtn.addEventListener('click', () => { initializeFormFromState(); generateFinalPrompt();
+      startScreen.style.display = 'none';
+      mainContainer.style.display = 'block';
+      navigateTo(1);
+    });
+
+    // Set initial view
+    const initialHash = window.location.hash.substring(1);
+    const initialLink = document.querySelector(`.nav-link[data-content="${initialHash}"]`) || document.querySelector('.nav-link[data-target="uni-prompt-app"]');
+    handleNavigation(initialLink.dataset.target, initialLink.dataset.content);
+
+    setupEventListeners();
+  };
+
+  init();
+});
+
+function initializeFormFromState() {
     // Restore assignmentType
     const assignmentTypeGroup = document.querySelector('[data-group="assignmentType"]');
     assignmentTypeGroup.querySelectorAll('.option-btn').forEach(btn => {
@@ -353,212 +545,5 @@ document.addEventListener('DOMContentLoaded', () => {
     formInputs.forEach(input => {
       input.value = promptState[input.id];
     });
-  };
-
-  const handleNavigation = (targetId, contentId) => {
-    // Update nav links
-    navLinks.forEach(link => {
-      link.classList.toggle('active', link.dataset.target === targetId && link.dataset.content === contentId);
-    });
-  
-    // Update views
-    views.forEach(view => {
-      view.classList.toggle('active', view.id === targetId);
-    });
-  
-    // Update content sections if content-viewer is active
-    if (targetId === 'content-viewer') {
-      contentSections.forEach(section => {
-        section.classList.toggle('active', section.id === `content-${contentId}`);
-      });
-    }
-  };
-
-  const navigateTo = (stepNum) => {
-    steps.forEach(step => step.classList.remove('active'));
-    document.getElementById(`step-${stepNum}`).classList.add('active');
-    
-    stepMarkers.forEach(marker => {
-      const markerStep = parseInt(marker.dataset.step, 10);
-      marker.classList.remove('active', 'completed');
-      if (markerStep < stepNum) {
-        marker.classList.add('completed');
-      } else if (markerStep === stepNum) {
-        marker.classList.add('active');
-      }
-    });
-    updateStepSummaries();
-  };
-
-  // --- 4. EVENT LISTENERS ---
-  const setupEventListeners = () => {
-    mainNav.addEventListener('click', (e) => {
-      e.preventDefault();
-      const link = e.target.closest('.nav-link');
-      if (link) {
-        const targetId = link.dataset.target;
-        const contentId = link.dataset.content || null;
-        handleNavigation(targetId, contentId);
-      }
-    });
-    
-    hybridOptionGroups.forEach(group => {
-      const groupName = group.dataset.group;
-      const buttons = group.querySelectorAll('.option-btn');
-      const select = group.querySelector('.choice-select-hybrid');
-  
-      if (groupName === 'assignmentType') {
-        const defaultButton = group.querySelector(`[data-value="${promptState.assignmentType.value}"]`);
-        if (defaultButton) defaultButton.classList.add('selected');
-      }
-
-      group.addEventListener('click', (e) => {
-        if (e.target.matches('.option-btn')) {
-          promptState[groupName].value = e.target.dataset.value;
-          buttons.forEach(btn => btn.classList.remove('selected'));
-          e.target.classList.add('selected');
-          if(select) select.value = "";
-          const customInput = document.getElementById(`${groupName}Custom`);
-          if(customInput) customInput.classList.remove('visible');
-          promptState[groupName].custom = '';
-          generateFinalPrompt();
-        }
-      });
-  
-      if (select) {
-        select.addEventListener('change', () => {
-          promptState[groupName].value = select.value;
-          buttons.forEach(btn => btn.classList.remove('selected'));
-          const customInput = document.getElementById(`${groupName}Custom`);
-          const isCustom = select.value === 'custom';
-          customInput.classList.toggle('visible', isCustom);
-          if (isCustom) { customInput.focus(); } 
-          else { customInput.value = ''; promptState[groupName].custom = ''; }
-          generateFinalPrompt();
-        });
-      }
-    });
-  
-    document.querySelectorAll('.choice-select:not(.choice-select-hybrid)').forEach(select => {
-      const groupName = select.id;
-      select.addEventListener('change', () => {
-          promptState[groupName].value = select.value;
-          const customInput = document.getElementById(`${groupName}Custom`);
-          const isCustom = select.value === 'custom';
-          customInput.classList.toggle('visible', isCustom);
-          if (isCustom) { customInput.focus(); } 
-          else { customInput.value = ''; promptState[groupName].custom = ''; }
-          generateFinalPrompt();
-      });
-    });
-  
-    customInputs.forEach(input => {
-      const groupName = input.id.replace('Custom', '');
-      input.addEventListener('input', () => {
-        promptState[groupName].custom = input.value;
-        generateFinalPrompt();
-      });
-    });
-  
-    emphasisGroup.addEventListener('change', (e) => {
-      if (e.target.matches('input[type="checkbox"]')) {
-        const customInput = document.getElementById('emphasisCustom');
-        if (e.target.value === 'custom') {
-          customInput.classList.toggle('visible', e.target.checked);
-          if (!e.target.checked) {
-            customInput.value = '';
-            promptState.emphasis.custom = '';
-          }
-        }
-        if (e.target.checked) {
-          promptState.emphasis.selected.add(e.target.value);
-        } else {
-          promptState.emphasis.selected.delete(e.target.value);
-        }
-      }
-      generateFinalPrompt();
-    });
-    
-    document.getElementById('emphasisCustom').addEventListener('input', (e) => {
-      promptState.emphasis.custom = e.target.value;
-      generateFinalPrompt();
-    });
-    
-    formInputs.forEach(input => {
-      input.addEventListener('input', () => {
-        promptState[input.id] = input.value;
-        generateFinalPrompt();
-      });
-    });
-    
-    nextTo2Btn.addEventListener('click', () => navigateTo(2));
-    nextTo3Btn.addEventListener('click', () => navigateTo(3));
-    backTo1Btn.addEventListener('click', () => navigateTo(1));
-    backTo2Btn.addEventListener('click', () => navigateTo(2));
-  
-    copyButton.addEventListener('click', () => {
-      const textToCopy = generatedPromptEl.textContent;
-      if (!textToCopy || textToCopy.includes('입력 필요') || textToCopy.includes('선택 필요')) {
-        alert('프롬프트의 필수 항목을 모두 채워주세요.');
-        return;
-      }
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        copyButton.textContent = '복사 완료!';
-        setTimeout(() => { copyButton.textContent = '프롬프트 복사'; }, 2000);
-      });
-    });
-
-    // Event listener for loading example prompts
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('load-example-btn')) {
-        const exampleKey = e.target.dataset.example;
-        const exampleData = promptExamples[exampleKey];
-        if (exampleData) {
-            // Deep copy exampleData into promptState
-            Object.assign(promptState, JSON.parse(JSON.stringify(exampleData)));
-            // Reconstruct Set for emphasis.selected as JSON.parse converts Set to Array
-            if (promptState.emphasis && Array.isArray(promptState.emphasis.selected)) {
-              promptState.emphasis.selected = new Set(promptState.emphasis.selected);
-            }
-
-            handleNavigation('uni-prompt-app', null); // Navigate to prompt builder
-            initializeFormFromState();
-            navigateTo(1); // Go to step 1
-            generateFinalPrompt(); // Generate prompt and save state
-        }
-      }
-    });
-
-  };
-
-  // --- 5. INITIALIZATION ---
-  const init = () => {
-    // Load state from local storage
-    const savedState = localStorage.getItem('uniPromptState');
-    if (savedState) {
-      const parsedState = JSON.parse(savedState);
-      // Reconstruct Set for emphasis.selected
-      if (parsedState.emphasis && Array.isArray(parsedState.emphasis.selected)) {
-        parsedState.emphasis.selected = new Set(parsedState.emphasis.selected);
-      }
-      Object.assign(promptState, parsedState);
-    }
-    
-    startBtn.addEventListener('click', () => {
-      startScreen.style.display = 'none';
-      mainContainer.style.display = 'block';
-      initializeFormFromState();
-      navigateTo(1);
-      generateFinalPrompt();
-    });
-
-    // Set initial view based on hash
-    const initialHash = window.location.hash.substring(1);
-    const initialLink = document.querySelector(`.nav-link[data-content="${initialHash}"]`) || document.querySelector('.nav-link[data-target="uni-prompt-app"]');
-    handleNavigation(initialLink.dataset.target, initialLink.dataset.content);
-
-    setupEventListeners();
-  };
-
-  init();
+  }
 });

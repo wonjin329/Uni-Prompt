@@ -21,12 +21,7 @@ body {
   margin: 0;
   color: #333;
   line-height: 1.6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  min-height: 100vh;
-  padding: 20px;
+  padding-top: 70px; /* Make space for fixed header */
   box-sizing: border-box;
   background: linear-gradient(-45deg, #e0eafc, #cfdef3, #eef1f5, #e6e9f0);
   background-size: 400% 400%;
@@ -37,6 +32,83 @@ button, input, textarea, select {
   font-family: inherit;
   font-size: 1em;
 }
+
+/* --- New Header & Navigation --- */
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.logo {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #1a237e;
+}
+
+.main-nav {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-link {
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: #e8eaf6;
+  color: #1a237e;
+}
+
+.nav-link.active {
+  background-color: #3f51b5;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* --- App Body and Views --- */
+#app-body {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.view {
+  display: none;
+  width: 100%;
+  max-width: 800px;
+}
+
+.view.active {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+#content-viewer .content-section {
+  display: none;
+}
+#content-viewer .content-section.active {
+  display: block;
+}
+
 
 /* --- Main Container & Header --- */
 .container {
@@ -49,6 +121,7 @@ button, input, textarea, select {
   padding: 30px 40px;
   box-sizing: border-box;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px;
 }
 
 /* --- Start Screen --- */
@@ -57,7 +130,7 @@ button, input, textarea, select {
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: calc(100vh - 40px);
+    min-height: calc(100vh - 110px); /* Adjust for header and padding */
     border: none;
     background: none;
     box-shadow: none;
@@ -93,12 +166,8 @@ button, input, textarea, select {
 #start-screen .start-content .intro-small { animation-delay: 0.8s; }
 #start-screen .start-content #start-btn { animation-delay: 1.1s; }
 
-
-#main-container .header {
-  text-align: center;
-  margin-bottom: 30px;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 20px;
+#main-container .steps-indicator {
+  margin-top: 20px;
 }
 
 h1 {
@@ -117,34 +186,96 @@ h1 {
 /* --- Steps Indicator --- */
 .steps-indicator {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+  justify-content: center; /* Changed from space-between to center */
+  align-items: flex-start;
+  margin-bottom: 40px;
   user-select: none;
+  gap: 10px; /* Added gap for consistent spacing between markers */
 }
 
 .step-marker {
-  font-size: 0.9em;
-  color: #888;
-  font-weight: 500;
-  padding: 8px 12px;
-  border-radius: 20px;
-  background-color: #f1f1f1;
-  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  flex: 1; /* Changed from width: 30% to flex: 1 for equal width distribution */
+  min-width: 120px; /* Added to prevent markers from becoming too small */
+  padding: 15px 10px;
+  border-radius: 12px;
+  background-color: #f1f1f1;
+  border: 2px solid #e0e0e0;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.step-number {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background-color: #a0a0a0;
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 8px;
+  transition: all 0.4s ease;
+}
+
+.step-title {
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 10px;
+  font-size: 0.95em;
+}
+
+.step-summary {
+  font-size: 0.8em;
+  color: #777;
+  height: 2.4em; /* Fixed height for two lines */
+  line-height: 1.2em;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+/* Removed .step-summary.two-lines as height is now fixed for all */
+
+/* States */
+.step-marker.completed .step-number {
+  background-color: #4CAF50; /* Green */
+}
+.step-marker.completed {
+  border-color: #4CAF50;
+}
+.step-marker.completed .step-title {
+  color: #333;
 }
 
 .step-marker.active {
+  background-color: #e8eaf6;
+  border-color: #3f51b5;
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.step-marker.active .step-number {
   background-color: #3f51b5;
-  color: #fff;
-  font-weight: 700;
+}
+
+.step-marker.active .step-title {
+  color: #1a237e;
 }
 
 .step-connector {
-  flex-grow: 1;
-  height: 2px;
+  flex-grow: 0; /* Changed from flex-grow: 1 */
+  flex-shrink: 0; /* Prevent shrinking */
+  width: 20px; /* Fixed width for connector */
+  height: 3px;
   background-color: #e0e0e0;
-  margin: 0 10px;
+  margin: 25px 0; /* Adjusted margin for better visual alignment */
+  transition: background-color 0.4s ease;
+}
+
+.step-marker.completed + .step-connector {
+  background-color: #4CAF50;
 }
 
 /* --- Step Content --- */
@@ -388,9 +519,9 @@ h1 {
   max-height: 400px;
 }
 
-/* --- AdSense Content Sections --- */
+/* --- Content Sections --- */
 .content-section {
-  margin-top: 20px;
+  margin-top: 0; /* reset margin */
 }
 .content-section h2 {
   text-align: center;
@@ -438,6 +569,17 @@ footer {
   padding: 20px;
   color: #888;
   font-size: 0.9em;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+footer a {
+  color: #3f51b5;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
 }
 
 .link-btn {
@@ -454,15 +596,13 @@ footer {
   color: #1a237e;
 }
 
-#info-wrapper.hidden {
-  display: none;
-}
-
 
 /* --- Responsive Adjustments --- */
-/* For tablets and smaller desktops */
 @media (max-width: 768px) {
   body {
+    padding-top: 60px;
+  }
+  #app-body {
     padding: 15px;
   }
   .container {
@@ -479,11 +619,35 @@ footer {
   }
 }
 
+@media (max-width: 600px) {
+  .main-header {
+    padding: 0 10px;
+  }
+  .logo {
+    font-size: 1.3em;
+  }
+  .main-nav {
+    gap: 5px;
+  }
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 0.9em;
+  }
+}
+
 /* For mobile phones */
 @media (max-width: 480px) {
   body {
-    padding: 10px;
+    padding-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
     -webkit-text-size-adjust: 100%; /* Prevent font scaling on iOS */
+  }
+  .main-header {
+    height: 50px;
+  }
+  #app-body {
+    padding: 10px 0;
   }
   .container {
     padding: 15px;
@@ -502,14 +666,14 @@ footer {
   }
   .steps-indicator {
     font-size: 0.8em;
-    flex-wrap: wrap; /* Allow step markers to wrap */
+    flex-wrap: wrap;
   }
   .step-connector {
-     display: none; /* Hide connectors on very small screens */
+     display: none;
   }
    .step-marker {
-    flex-basis: 100%; /* Each marker takes full width */
-    margin-bottom: 5px;
+    flex-basis: 100%;
+    margin-bottom: 8px;
   }
   .choice-section h3, .choice-section > label {
     font-size: 1.1em;
@@ -517,7 +681,7 @@ footer {
   .nav-btn {
     padding: 14px 15px;
     font-size: 0.95em;
-    flex-basis: 100px; /* Allow buttons to have a flexible base width */
+    flex-basis: 100px;
   }
   .navigation-btns {
     justify-content: space-between;
