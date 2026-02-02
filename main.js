@@ -1,4 +1,50 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // --- NAVIGATION HIGHLIGHTER for Multi-Page Site ---
+  const handleMultiPageNav = () => {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.main-nav .nav-link');
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      const linkPath = link.getAttribute('href');
+
+      // Handle root path case for index.html
+      if ((linkPath === '/index.html' || linkPath === 'index.html') && currentPath === '/') {
+        link.classList.add('active');
+        return;
+      }
+      
+      // Check if the link's href is part of the current path
+      // This handles cases like /article1.html matching /blog.html's "parent" link
+      if (currentPath.startsWith(linkPath) && linkPath !== '/index.html' && linkPath !== 'index.html') {
+         // More specific paths should win, so we clear previous actives
+         navLinks.forEach(l => l.classList.remove('active'));
+         link.classList.add('active');
+      } else if (currentPath === linkPath) {
+         link.classList.add('active');
+      }
+    });
+
+    // Special case for blog articles to highlight the main '블로그' tab
+    if (currentPath.includes('/article')) {
+        const blogLink = document.querySelector('.main-nav .nav-link[href="/blog.html"]');
+        if (blogLink) {
+            navLinks.forEach(link => link.classList.remove('active')); // remove active from all
+            blogLink.classList.add('active'); // only active blog tab
+        }
+    } else if (currentPath === '/' || currentPath === '/index.html') {
+        const homeLink = document.querySelector('.main-nav .nav-link[href="/index.html"]');
+        if(homeLink) {
+            navLinks.forEach(link => link.classList.remove('active'));
+            homeLink.classList.add('active');
+        }
+    }
+  };
+
+  // Run the function to set the active link on page load
+  handleMultiPageNav();
+
+
   // --- 1. STATE MANAGEMENT ---
   const promptState = {
     assignmentType: { value: 'report', custom: '' },
@@ -12,312 +58,259 @@ document.addEventListener('DOMContentLoaded', () => {
     references: ''
   };
 
-  // --- 2. DOM ELEMENTS ---
+  // --- 2. DOM ELEMENTS (for Prompt Builder on index.html) ---
   const startScreen = document.getElementById('start-screen');
   const mainContainer = document.getElementById('main-container');
   const startBtn = document.getElementById('start-btn');
-  const mainNav = document.querySelector('.main-nav');
-  const navLinks = document.querySelectorAll('.nav-link');
-  const views = document.querySelectorAll('.view');
-  const contentSections = document.querySelectorAll('#content-viewer .content-section');
   
-  const steps = document.querySelectorAll('.step');
-  const stepMarkers = document.querySelectorAll('.step-marker');
-  const nextTo2Btn = document.getElementById('next-to-2');
-  const nextTo3Btn = document.getElementById('next-to-3');
-  const backTo1Btn = document.getElementById('back-to-1');
-  const backTo2Btn = document.getElementById('back-to-2');
-  const generatedPromptEl = document.getElementById('generatedPrompt');
-  const copyButton = document.getElementById('copyButton');
-  const formInputs = document.querySelectorAll('#topic, #keywords, #references');
-  const hybridOptionGroups = document.querySelectorAll('.hybrid-options');
-  const customInputs = document.querySelectorAll('.custom-input');
-  const emphasisGroup = document.querySelector('[data-group="emphasis"]');
+  // Check if we are on the index page before querying for builder-specific elements
+  if(document.getElementById('uni-prompt-app')) {
+    const steps = document.querySelectorAll('.step');
+    const stepMarkers = document.querySelectorAll('.step-marker');
+    const nextTo2Btn = document.getElementById('next-to-2');
+    const nextTo3Btn = document.getElementById('next-to-3');
+    const backTo1Btn = document.getElementById('back-to-1');
+    const backTo2Btn = document.getElementById('back-to-2');
+    const generatedPromptEl = document.getElementById('generatedPrompt');
+    const copyButton = document.getElementById('copyButton');
+    const formInputs = document.querySelectorAll('#topic, #keywords, #references');
+    const hybridOptionGroups = document.querySelectorAll('.hybrid-options');
+    const customInputs = document.querySelectorAll('.custom-input');
+    const emphasisGroup = document.querySelector('[data-group="emphasis"]');
 
-  // --- DATA MAPS ---
-  const dataMaps = {
-    authorLevel: { 'high-school': '고등학생', 'undergrad-freshman': '1-2학년', 'undergrad-senior': '3-4학년', 'master': '석사 과정', 'doctor': '박사 과정' },
-    lectureType: { 'general': '교양', 'major': '전공', 'seminar': '세미나' },
-    tone: { 'academic': '학술적', 'explanatory': '설명적', 'critical': '비평적', 'persuasive': '설득적', 'creative': '창의적' },
-    assignmentType: { 'report': '리포트 초안', 'ppt': 'PPT 개요', 'summary': '논문 요약/분석', 'problem-solving': '연습문제 풀이', 'brainstorming': '아이디어 브레인스토밍', 'proofreading': '글 교정/개선', 'lab-report': '실험 보고서', 'cover-letter': '취업 자기소개서' },
-    emphasis: { 
-      'case-study': '사례 위주', 
-      'personal-thoughts': '개인 생각 포함', 
-      'citation-apa': '출처 표기', 
-      'word-count': '분량 엄수', 
-      'quantitative': '정량 데이터', 
-      'compare-contrast': '비교/대조',
-      'latest-research': '최신 연구 반영', 
-      'theoretical-background': '이론 배경 강화', 
-      'data-statistics': '데이터/통계 활용'
-    }
-  };
+    // --- DATA MAPS ---
+    const dataMaps = {
+      authorLevel: { 'high-school': '고등학생', 'undergrad-freshman': '1-2학년', 'undergrad-senior': '3-4학년', 'master': '석사 과정', 'doctor': '박사 과정' },
+      lectureType: { 'general': '교양', 'major': '전공', 'seminar': '세미나' },
+      tone: { 'academic': '학술적', 'explanatory': '설명적', 'critical': '비평적', 'persuasive': '설득적', 'creative': '창의적' },
+      assignmentType: { 'report': '리포트 초안', 'ppt': 'PPT 개요', 'summary': '논문 요약/분석', 'problem-solving': '연습문제 풀이', 'brainstorming': '아이디어 브레인스토밍', 'proofreading': '글 교정/개선', 'lab-report': '실험 보고서', 'cover-letter': '취업 자기소개서' },
+      emphasis: { 
+        'case-study': '사례 위주', 
+        'personal-thoughts': '개인 생각 포함', 
+        'citation-apa': '출처 표기', 
+        'word-count': '분량 엄수', 
+        'quantitative': '정량 데이터', 
+        'compare-contrast': '비교/대조',
+        'latest-research': '최신 연구 반영', 
+        'theoretical-background': '이론 배경 강화', 
+        'data-statistics': '데이터/통계 활용'
+      }
+    };
 
-    // --- PROMPT EXAMPLES DATA ---
-  const promptExamples = {
-    reportExample: {
-      assignmentType: {value:"report", custom:""},
-      authorLevel: {value:"undergrad-senior", custom:""},
-      lectureType: {value:"major", custom:""},
-      tone: {value:"critical", custom:""},
-      majorField: {value:"humanities", custom:""},
-      emphasis: {selected:["latest-research", "theoretical-background"], custom:""},
-      topic:"디지털 격차 해소 방안",
-      keywords:"디지털 불평등, 정보 접근성, 사회적 자본, 정책 제언",
-      references:""
-    },
-    pptExample: {
-      assignmentType: {value:"ppt", custom:""},
-      authorLevel: {value:"undergrad-senior", custom:""},
-      lectureType: {value:"major", custom:""},
-      tone: {value:"persuasive", custom:""},
-      majorField: {value:"business", custom:""},
-      emphasis: {selected:["case-study", "data-statistics"], custom:""},
-      topic:"친환경 신제품 마케팅 전략",
-      keywords:"지속가능성, MZ세대, 소셜 미디어 마케팅, 브랜드 가치",
-      references:""
-    },
-    summaryExample: {
-      assignmentType: {value:"summary", custom:""},
-      authorLevel: {value:"master", custom:""},
-      lectureType: {value:"seminar", custom:""},
-      tone: {value:"critical", custom:""},
-      majorField: {value:"engineering", custom:""},
-      emphasis: {selected:["theoretical-background"], custom:"주요 한계점과 미래 연구 방향 제언"},
-      topic:"대규모 언어 모델의 윤리적 문제점",
-      keywords:"LLM, 인공지능 윤리, 편향성, 사회적 영향",
-      references:"[참고 논문 제목: Large Language Models and the Ethics of AI]\n[참고 논문 제목: Bias in AI: A Survey of Recent Advances]"
-    }
-  };
+    // --- 3. CORE FUNCTIONS ---
+    const getResolvedValue = (state, key, map) => {
+      const stateItem = state[key];
+      if (stateItem.value === 'custom') return stateItem.custom;
+      return map[stateItem.value] || stateItem.value || '';
+    };
+    
+    const updateStepSummaries = () => {
+      if (!mainContainer.offsetParent) return;
+      // Step 1 Summary
+      const step1SummaryEl = document.querySelector('.step-marker[data-step="1"] .step-summary');
+      const assignmentType = getResolvedValue(promptState, 'assignmentType', dataMaps.assignmentType);
+      step1SummaryEl.textContent = assignmentType || '미선택';
+    
+      // Step 2 Summary
+      const step2SummaryEl = document.querySelector('.step-marker[data-step="2"] .step-summary');
+      const authorLevel = getResolvedValue(promptState, 'authorLevel', dataMaps.authorLevel);
+      const tone = getResolvedValue(promptState, 'tone', dataMaps.tone);
+      const major = getResolvedValue(promptState, 'majorField', {});
+      const summary2 = [authorLevel, major, tone].filter(Boolean).join(' · ');
+      step2SummaryEl.textContent = summary2 || '미선택';
+    
+      // Step 3 Summary
+      const step3SummaryEl = document.querySelector('.step-marker[data-step="3"] .step-summary');
+      const hasTopic = promptState.topic.trim() !== '';
+      const hasKeywords = promptState.keywords.trim() !== '';
+      const hasEmphasis = promptState.emphasis.selected.size > 0 || promptState.emphasis.custom.trim() !== '';
+      let summary3Parts = [];
+      if(hasTopic) summary3Parts.push('주제');
+      if(hasKeywords) summary3Parts.push('키워드');
+      if(hasEmphasis) summary3Parts.push('강조사항');
+      step3SummaryEl.textContent = summary3Parts.length > 0 ? summary3Parts.join(' · ') : '미입력';
+    };
 
-  // --- 3. CORE FUNCTIONS ---
-  const getResolvedValue = (state, key, map) => {
-    const stateItem = state[key];
-    if (stateItem.value === 'custom') return stateItem.custom;
-    return map[stateItem.value] || stateItem.value || '';
-  };
-  
-  const updateStepSummaries = () => {
-    if (!mainContainer.offsetParent) return;
-    // Step 1 Summary
-    const step1SummaryEl = document.querySelector('.step-marker[data-step="1"] .step-summary');
-    const assignmentType = getResolvedValue(promptState, 'assignmentType', dataMaps.assignmentType);
-    step1SummaryEl.textContent = assignmentType || '미선택';
-  
-    // Step 2 Summary
-    const step2SummaryEl = document.querySelector('.step-marker[data-step="2"] .step-summary');
-    const authorLevel = getResolvedValue(promptState, 'authorLevel', dataMaps.authorLevel);
-    const tone = getResolvedValue(promptState, 'tone', dataMaps.tone);
-    const major = getResolvedValue(promptState, 'majorField', {});
-    const summary2 = [authorLevel, major, tone].filter(Boolean).join(' · ');
-    step2SummaryEl.textContent = summary2 || '미선택';
-  
-    // Step 3 Summary
-    const step3SummaryEl = document.querySelector('.step-marker[data-step="3"] .step-summary');
-    const hasTopic = promptState.topic.trim() !== '';
-    const hasKeywords = promptState.keywords.trim() !== '';
-    const hasEmphasis = promptState.emphasis.selected.size > 0 || promptState.emphasis.custom.trim() !== '';
-    let summary3Parts = [];
-    if(hasTopic) summary3Parts.push('주제');
-    if(hasKeywords) summary3Parts.push('키워드');
-    if(hasEmphasis) summary3Parts.push('강조사항');
-    step3SummaryEl.textContent = summary3Parts.length > 0 ? summary3Parts.join(' · ') : '미입력';
-  };
-
-  const promptBlocks = {
-    header: () => `# [Uni-Prompt] AI 작업 지시서`,
-    persona: (state) => {
-      const authorLevel = getResolvedValue(state, 'authorLevel', dataMaps.authorLevel);
-      const majorField = getResolvedValue(state, 'majorField', {});
-      const lectureType = getResolvedValue(state, 'lectureType', dataMaps.lectureType);
-      const tone = getResolvedValue(state, 'tone', dataMaps.tone);
-      const aiRole = `너는 '${lectureType || '다양한'}' 성격의 강의 내용을 이해하고 있는, '${majorField || '다양한 분야'}' 전공 지식을 갖춘 **글쓰기 센터의 전문 튜터이자 전공 조교(TA)**야.`;
-      const mission = `'${authorLevel || '학생'}' 수준의 눈높이에 맞춰 과제의 방향을 잡아주고, 내용을 논리적으로 구성하며, 완성도를 높이도록 돕는 것이 너의 임무야.`;
-      const toneInstruction = `모든 답변은 '${tone || '기본'}' 스타일을 일관되게 유지해야 해.`;
-      return `## AI 페르소나 (AI Persona)
+    const promptBlocks = {
+      header: () => `# [Uni-Prompt] AI 작업 지시서`,
+      persona: (state) => {
+        const authorLevel = getResolvedValue(state, 'authorLevel', dataMaps.authorLevel);
+        const majorField = getResolvedValue(state, 'majorField', {});
+        const lectureType = getResolvedValue(state, 'lectureType', dataMaps.lectureType);
+        const tone = getResolvedValue(state, 'tone', dataMaps.tone);
+        const aiRole = `너는 '${lectureType || '다양한'}' 성격의 강의 내용을 이해하고 있는, '${majorField || '다양한 분야'}' 전공 지식을 갖춘 **글쓰기 센터의 전문 튜터이자 전공 조교(TA)**야.`;
+        const mission = `'${authorLevel || '학생'}' 수준의 눈높이에 맞춰 과제의 방향을 잡아주고, 내용을 논리적으로 구성하며, 완성도를 높이도록 돕는 것이 너의 임무야.`;
+        const toneInstruction = `모든 답변은 '${tone || '기본'}' 스타일을 일관되게 유지해야 해.`;
+        return `## AI 페르소나 (AI Persona)
 - **역할:** ${aiRole}
 - **임무:** ${mission}
 - **어조:** ${toneInstruction}`;
-    },
-    taskDefinition: (state) => {
-      const assignmentType = getResolvedValue(state, 'assignmentType', dataMaps.assignmentType);
-      const topic = state.topic || '[주제 입력 필요]';
-      let taskInstruction = '';
-      switch (state.assignmentType.value) {
-        case 'report':
-          taskInstruction = `서론, 본론, 결론의 구조를 갖춘 심층적인 **리포트 초안**을 작성해줘.`;
-          break;
-        case 'ppt':
-          taskInstruction = `핵심 내용을 중심으로 **PPT 발표 개요**를 슬라이드 형식으로 제안해줘. 각 슬라이드는 [제목]과 [핵심 내용(bullet points)]으로 구성되어야 해.`;
-          break;
-        case 'summary':
-          taskInstruction = `제공된 '참고 문헌' 또는 '주제'에 대한 **핵심 내용 요약 및 분석**을 수행해줘. 주요 논거, 방법론, 결론을 명확히 구분해서 제시해야 해.`;
-          break;
-        case 'problem-solving':
-          taskInstruction = `주어진 '주제' 또는 '문제'에 대한 **단계별 해결 과정**을 명확하고 논리적으로 설명해줘.`;
-          break;
-        case 'brainstorming':
-          taskInstruction = `주제와 관련하여 독창적이고 다양한 **아이디어들을 브레인스토밍**해줘. 최소 5가지 이상의 아이디어를 각각의 장단점과 함께 제시해줘.`;
-          break;
-        case 'proofreading':
-          taskInstruction = `'주제' 섹션에 입력된 글에서 **문법 오류, 어색한 문장, 오탈자 등을 찾아 수정**하고, 더 나은 표현을 제안해줘. 수정 전/후를 비교할 수 있도록 제시해야 해.`;
-          break;
-        case 'lab-report':
-          taskInstruction = `**실험 보고서**의 표준 양식(목적, 이론, 방법, 결과, 고찰)에 맞춰 내용을 구성해줘.`;
-          break;
-        case 'cover-letter':
-          taskInstruction = `**취업 자기소개서 초안**을 작성해줘. 나의 강점과 경험이 '주제'로 제시된 직무와 어떻게 연결되는지에 초점을 맞춰야 해.`;
-          break;
-        default:
-          taskInstruction = `요청한 과제인 **'${assignmentType}'** 를 수행해줘.`;
-      }
-      return `## 핵심 과업 (Primary Task)
+      },
+      taskDefinition: (state) => {
+        const assignmentType = getResolvedValue(state, 'assignmentType', dataMaps.assignmentType);
+        const topic = state.topic || '[주제 입력 필요]';
+        let taskInstruction = '';
+        switch (state.assignmentType.value) {
+          case 'report':
+            taskInstruction = `서론, 본론, 결론의 구조를 갖춘 심층적인 **리포트 초안**을 작성해줘.`;
+            break;
+          case 'ppt':
+            taskInstruction = `핵심 내용을 중심으로 **PPT 발표 개요**를 슬라이드 형식으로 제안해줘. 각 슬라이드는 [제목]과 [핵심 내용(bullet points)]으로 구성되어야 해.`;
+            break;
+          case 'summary':
+            taskInstruction = `제공된 '참고 문헌' 또는 '주제'에 대한 **핵심 내용 요약 및 분석**을 수행해줘. 주요 논거, 방법론, 결론을 명확히 구분해서 제시해야 해.`;
+            break;
+          case 'problem-solving':
+            taskInstruction = `주어진 '주제' 또는 '문제'에 대한 **단계별 해결 과정**을 명확하고 논리적으로 설명해줘.`;
+            break;
+          case 'brainstorming':
+            taskInstruction = `주제와 관련하여 독창적이고 다양한 **아이디어들을 브레인스토밍**해줘. 최소 5가지 이상의 아이디어를 각각의 장단점과 함께 제시해줘.`;
+            break;
+          case 'proofreading':
+            taskInstruction = `'주제' 섹션에 입력된 글에서 **문법 오류, 어색한 문장, 오탈자 등을 찾아 수정**하고, 더 나은 표현을 제안해줘. 수정 전/후를 비교할 수 있도록 제시해야 해.`;
+            break;
+          case 'lab-report':
+            taskInstruction = `**실험 보고서**의 표준 양식(목적, 이론, 방법, 결과, 고찰)에 맞춰 내용을 구성해줘.`;
+            break;
+          case 'cover-letter':
+            taskInstruction = `**취업 자기소개서 초안**을 작성해줘. 나의 강점과 경험이 '주제'로 제시된 직무와 어떻게 연결되는지에 초점을 맞춰야 해.`;
+            break;
+          default:
+            taskInstruction = `요청한 과제인 **'${assignmentType}'** 를 수행해줘.`;
+        }
+        return `## 핵심 과업 (Primary Task)
 - **과제 종류:** ${assignmentType}
 - **주제:** ${topic}
 - **수행 지시:** ${taskInstruction}`;
-    },
-    chainOfThought: (state) => {
-      let steps = [];
-      switch (state.assignmentType.value) {
-        case 'report':
-          steps = ["**정보 분석:** 내가 제공하는 모든 정보(주제, 키워드, 참고자료 등)를 종합적으로 분석한다.","**개요 작성:** 분석 내용을 바탕으로 서론-본론-결론 구조의 리포트 개요를 설계한다.","**본론 구성:** 본론의 각 섹션에 어떤 내용과 근거를 배치할지 구체적으로 구상한다.","**초안 작성:** 설계한 구조와 구상에 따라 논리적 흐름에 맞춰 초안을 작성한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
-          break;
-        case 'ppt':
-          steps = ["**핵심 메시지 정의:** 전체 발표를 통해 전달할 가장 중요한 핵심 메시지를 정의한다.","**슬라이드 구조 설계:** 발표의 도입-전개-마무리 흐름에 맞춰 전체 슬라이드 목차를 설계한다.","**슬라이드별 내용 요약:** 각 슬라이드에 들어갈 핵심 내용을 불렛 포인트(bullet points) 형식으로 간결하게 정리한다.","**시각 자료/스크립트 제안:** 내용 이해를 도울 시각 자료(그래프, 이미지 등) 아이디어를 제안하고, 예상 발표 스크립트를 간략하게 작성한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
-          break;
-        case 'summary':
-          steps = ["**자료 분석:** 요약할 텍스트(논문, 기사 등)의 핵심 논증과 구조를 파악한다.","**핵심 근거 식별:** 주장을 뒷받침하는 주요 데이터, 사례, 이론 등을 식별한다.","**구조화 및 요약:** 서론(연구 배경/문제)-본론(방법론/결과)-결론(시사점)의 구조로 핵심 내용을 재구성하여 요약한다.","**비평/분석 추가:** (필요시) 해당 자료의 강점, 약점, 또는 다른 관점과의 비교 분석을 추가한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
-          break;
-        case 'lab-report':
-          steps = ["**실험 목적/배경 분석:** 실험의 목적과 관련된 이론적 배경을 명확히 분석한다.","**데이터 정리:** 실험 결과 데이터를 정리하고, 보고서에 제시할 그래프나 표를 구상한다.","**섹션별 내용 작성:** 보고서 양식(목적, 방법, 결과, 고찰)에 맞춰 각 섹션의 내용을 논리적으로 작성한다.","**고찰 심화:** 결과 데이터가 의미하는 바를 이론적 배경과 연결하여 깊이 있게 해석하고, 오차의 원인이나 개선점을 제시한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
-          break;
-        case 'cover-letter':
-          steps = ["**직무 요구사항 분석:** 채용 공고의 직무 설명, 자격 요건을 분석하여 핵심 역량을 파악한다.","**경험-역량 매칭:** 나의 경험, 기술, 성과를 파악된 핵심 역량과 연결하여 스토리 소재를 선정한다.","**STAR 기법 구조화:** 각 경험을 STAR(Situation, Task, Action, Result) 기법에 따라 구체적이고 설득력 있게 풀어낼 수 있도록 구조화한다.","**초안 작성:** 지원 동기 - 직무 역량 어필 - 입사 후 포부의 흐름으로 전체 자기소개서 초안을 작성한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
-          break;
-        case 'problem-solving':
-          steps = ["**문제 정의:** 해결해야 할 문제가 무엇인지, 주어진 조건과 제약사항은 무엇인지 명확하게 정의한다.","**해결 전략 수립:** 문제를 해결하기 위한 접근법이나 필요한 공식, 이론, 알고리즘 등을 구상한다.","**단계별 풀이:** 수립한 전략에 따라 문제 해결 과정을 단계별로 상세하고 논리적으로 서술한다.","**결과 검증:** 도출된 결과가 타당한지, 초기 조건에 부합하는지 다시 한번 검토한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
-          break;
-        default:
-          return '';
-      }
-      const stepsFormatted = steps.map((step, index) => `${index + 1}. ${step}`).join('\n');
-      return `## 작업 순서 (Chain of Thought)\n${stepsFormatted}`;
-    },
-    coreInstructions: (state) => {
-      const emphasisItems = Array.from(state.emphasis.selected).map(val => dataMaps.emphasis[val] || val).filter(item => item !== '직접 입력...');
-      if (state.emphasis.custom) emphasisItems.push(state.emphasis.custom);
-      const emphasisText = emphasisItems.length > 0 ? `- **교수님 강조 사항:**\n${emphasisItems.map(item => `    - ${item}`).join('\n')}` : '';
-      const keywordsText = state.keywords ? `- **핵심 키워드:** 다음 키워드를 중심으로 내용을 전개해줘: "${state.keywords}"` : '';
-      const instructions = [emphasisText, keywordsText].filter(Boolean);
-      if (instructions.length === 0) return '';
-      return `## 세부 지침 (Detailed Instructions)\n${instructions.join('\n')}`;
-    },
-    sourceHandling: (state) => {
-      if (state.references) {
-        return `## 참고자료 활용 (Source Handling)\n- **참고 문헌 활용:** 아래 문헌들의 핵심 논지를 종합하고, 서로 비교/대조하여 논리를 강화해줘. 단순 요약은 지양해줘.\n  - 참고 문헌 리스트:\n${state.references.split('\n').filter(Boolean).map(line => `    - ${line.trim()}`).join('\n')}`;
-      }
-      return '';
-    },
-    selfCorrection: (state) => {
-      const authorLevel = getResolvedValue(state, 'authorLevel', dataMaps.authorLevel);
-      const tone = getResolvedValue(state, 'tone', dataMaps.tone);
-      return `## 자체 검토 체크리스트 (Self-Correction Checklist)\n결과물을 제출하기 전, 아래 항목을 스스로 검토하고 부족한 부분을 수정한 후 최종 답변을 해줘.\n- **[ ] 요구사항 충족:** 내가 요청한 모든 지시사항(주제, 키워드, 강조사항)이 정확히 반영되었는가?\n- **[ ] 페르소나 유지:** 답변의 전체적인 수준이 '${authorLevel || '학생'}'의 눈높이에 맞는가? '${tone || '기본'}' 스타일이 일관되게 유지되었는가?\n- **[ ] 논리성 및 완결성:** 글의 구조가 체계적이고, 논리적 비약이나 미완성된 부분이 없는가?\n- **[ ] 사실 기반 작성:** 생성한 모든 정보, 특히 데이터, 인용, 사례 등은 실재하는 사실에 기반하고 있는가? 근거 없는 내용(Hallucination)을 지어내지 않았는가?\n- **[ ] 사용자 추가 영역 명시:** 학생이 직접 채워야 할 부분(예: 개인적인 생각, 실제 수업 내용)을 명확히 인지하고, 해당 부분에 "[여기에 OO을 추가하여 글을 완성하세요]"와 같은 가이드 문구를 포함했는가?`;
-    },
-    metaInstructions: () => {
-      return `## 최종 출력 규칙 (Meta-Instructions)\n**가장 중요:** 너의 답변은 일회성으로 끝나서는 안 되며, 나와의 지속적인 상호작용을 위한 '워크스페이스'를 제공해야 한다. 다음 규칙을 반드시 준수해줘.\n1.  **[계획 브리핑]:** 가장 먼저, "알겠습니다. 요청하신 과제에 대해..."로 시작하며 작업 계획을 간략히 브리핑한다.\n2.  **[핵심 과업 수행]:** 그 후에, 위에서 정의된 핵심 과업을 수행한다.\n3.  **[다음 스텝 제안]:** 마지막으로, 생성된 결과물에 기반하여 내가 추가로 요청할 수 있는 작업들을 '**[추가 작업 제안]'** 이라는 제목으로 3~4가지 제안한다. 각 제안은 내가 바로 복사해서 입력할 수 있는 명령어 형식이어야 한다. (예: \"/expand [섹션]\", \"/critique\", \"/rephrase\", \"/examples")`;
-    }
-  };
-  
-  const getRecipeForType = (type) => {
-    const baseRecipe = ['header', 'persona', 'taskDefinition', 'coreInstructions', 'sourceHandling'];
-    const typesWithChainOfThought = ['report', 'ppt', 'summary', 'lab-report', 'cover-letter', 'problem-solving'];
-    if (typesWithChainOfThought.includes(type)) {
-      return [...baseRecipe, 'chainOfThought', 'selfCorrection', 'metaInstructions'];
-    }
-    switch (type) {
-      case 'brainstorming':
-        return ['header', 'persona', 'taskDefinition', 'coreInstructions', 'metaInstructions'];
-      case 'proofreading':
-        return ['header', 'persona', 'taskDefinition', 'selfCorrection', 'metaInstructions'];
-      default:
-        return [...baseRecipe, 'selfCorrection', 'metaInstructions'];
-    }
-  };
-
-  const generateFinalPrompt = () => {
-    updateStepSummaries();
-    if (!promptState.assignmentType.value) {
-      generatedPromptEl.textContent = 'Step 1에서 과제 유형을 선택해주세요.';
-      return;
-    }
-    const recipe = getRecipeForType(promptState.assignmentType.value);
-    
-    let sectionCounter = 1;
-    const promptParts = recipe.map(blockName => {
-      const blockContent = promptBlocks[blockName]?.(promptState);
-      if (!blockContent) return '';
-
-      if (blockName !== 'header' && blockContent.startsWith('## ')) {
-        return blockContent.replace('## ', `## ${sectionCounter++}. `);
-      }
-      
-      return blockContent;
-    });
-      
-    const finalPrompt = promptParts.filter(Boolean).join('\n\n');
-    generatedPromptEl.textContent = finalPrompt.replace(/(\n\s*){3,}/g, '\n\n').trim();
-
-    // Save to localStorage
-    const serializableState = { ...promptState, emphasis: { ...promptState.emphasis, selected: [...promptState.emphasis.selected] } };
-    localStorage.setItem('uniPromptState', JSON.stringify(serializableState));
-  };
-
-  const initializeFormFromState = () => {
-    // Restore assignmentType
-    const assignmentTypeGroup = document.querySelector('[data-group="assignmentType"]');
-    assignmentTypeGroup.querySelectorAll('.option-btn').forEach(btn => {
-      btn.classList.remove('selected');
-      if (btn.dataset.value === promptState.assignmentType.value) {
-        btn.classList.add('selected');
-      }
-    });
-    const assignmentTypeSelect = assignmentTypeGroup.querySelector('.choice-select-hybrid');
-    if (assignmentTypeSelect) {
-      assignmentTypeSelect.value = promptState.assignmentType.value;
-      const customInput = document.getElementById('assignmentTypeCustom');
-      if (promptState.assignmentType.value === 'custom') {
-        customInput.value = promptState.assignmentType.custom;
-        customInput.classList.add('visible');
-      } else {
-        customInput.classList.remove('visible');
-      }
-    }
-
-    // Restore authorLevel, lectureType, tone, majorField
-    ['authorLevel', 'lectureType', 'tone', 'majorField'].forEach(groupName => {
-      const group = document.querySelector(`[data-group="${groupName}"]`);
-      if (group) {
-        group.querySelectorAll('.option-btn').forEach(btn => {
-          btn.classList.remove('selected');
-          if (btn.dataset.value === promptState[groupName].value) {
-            btn.classList.add('selected');
-          }
-        });
-        const select = group.querySelector('.choice-select-hybrid') || document.getElementById(groupName);
-        if (select) {
-          select.value = promptState[groupName].value;
-          const customInput = document.getElementById(`${groupName}Custom`);
-          if (promptState[groupName].value === 'custom') {
-            if (customInput) {
-              customInput.value = promptState[groupName].custom;
-              customInput.classList.add('visible');
-            }
-          } else {
-            if (customInput) customInput.classList.remove('visible');
-          }
+      },
+      chainOfThought: (state) => {
+        let steps = [];
+        switch (state.assignmentType.value) {
+          case 'report':
+            steps = ["**정보 분석:** 내가 제공하는 모든 정보(주제, 키워드, 참고자료 등)를 종합적으로 분석한다.","**개요 작성:** 분석 내용을 바탕으로 서론-본론-결론 구조의 리포트 개요를 설계한다.","**본론 구성:** 본론의 각 섹션에 어떤 내용과 근거를 배치할지 구체적으로 구상한다.","**초안 작성:** 설계한 구조와 구상에 따라 논리적 흐름에 맞춰 초안을 작성한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
+            break;
+          case 'ppt':
+            steps = ["**핵심 메시지 정의:** 전체 발표를 통해 전달할 가장 중요한 핵심 메시지를 정의한다.","**슬라이드 구조 설계:** 발표의 도입-전개-마무리 흐름에 맞춰 전체 슬라이드 목차를 설계한다.","**슬라이드별 내용 요약:** 각 슬라이드에 들어갈 핵심 내용을 불렛 포인트(bullet points) 형식으로 간결하게 정리한다.","**시각 자료/스크립트 제안:** 내용 이해를 도울 시각 자료(그래프, 이미지 등) 아이디어를 제안하고, 예상 발표 스크립트를 간략하게 작성한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
+            break;
+          case 'summary':
+            steps = ["**자료 분석:** 요약할 텍스트(논문, 기사 등)의 핵심 논증과 구조를 파악한다.","**핵심 근거 식별:** 주장을 뒷받침하는 주요 데이터, 사례, 이론 등을 식별한다.","**구조화 및 요약:** 서론(연구 배경/문제)-본론(방법론/결과)-결론(시사점)의 구조로 핵심 내용을 재구성하여 요약한다.","**비평/분석 추가:** (필요시) 해당 자료의 강점, 약점, 또는 다른 관점과의 비교 분석을 추가한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
+            break;
+          case 'lab-report':
+            steps = ["**실험 목적/배경 분석:** 실험의 목적과 관련된 이론적 배경을 명확히 분석한다.","**데이터 정리:** 실험 결과 데이터를 정리하고, 보고서에 제시할 그래프나 표를 구상한다.","**섹션별 내용 작성:** 보고서 양식(목적, 방법, 결과, 고찰)에 맞춰 각 섹션의 내용을 논리적으로 작성한다.","**고찰 심화:** 결과 데이터가 의미하는 바를 이론적 배경과 연결하여 깊이 있게 해석하고, 오차의 원인이나 개선점을 제시한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
+            break;
+          case 'cover-letter':
+            steps = ["**직무 요구사항 분석:** 채용 공고의 직무 설명, 자격 요건을 분석하여 핵심 역량을 파악한다.","**경험-역량 매칭:** 나의 경험, 기술, 성과를 파악된 핵심 역량과 연결하여 스토리 소재를 선정한다.","**STAR 기법 구조화:** 각 경험을 STAR(Situation, Task, Action, Result) 기법에 따라 구체적이고 설득력 있게 풀어낼 수 있도록 구조화한다.","**초안 작성:** 지원 동기 - 직무 역량 어필 - 입사 후 포부의 흐름으로 전체 자기소개서 초안을 작성한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
+            break;
+          case 'problem-solving':
+            steps = ["**문제 정의:** 해결해야 할 문제가 무엇인지, 주어진 조건과 제약사항은 무엇인지 명확하게 정의한다.","**해결 전략 수립:** 문제를 해결하기 위한 접근법이나 필요한 공식, 이론, 알고리즘 등을 구상한다.","**단계별 풀이:** 수립한 전략에 따라 문제 해결 과정을 단계별로 상세하고 논리적으로 서술한다.","**결과 검증:** 도출된 결과가 타당한지, 초기 조건에 부합하는지 다시 한번 검토한다.","**자체 검토:** '자체 검토 체크리스트'에 따라 결과물을 검토하고 수정한다."];
+            break;
+          default:
+            return '';
         }
-      } else { // Handle simple select for majorField if no hybrid group
-          const select = document.getElementById(groupName);
+        const stepsFormatted = steps.map((step, index) => `${index + 1}. ${step}`).join('\n');
+        return `## 작업 순서 (Chain of Thought)\n${stepsFormatted}`;
+      },
+      coreInstructions: (state) => {
+        const emphasisItems = Array.from(state.emphasis.selected).map(val => dataMaps.emphasis[val] || val).filter(item => item !== '직접 입력...');
+        if (state.emphasis.custom) emphasisItems.push(state.emphasis.custom);
+        const emphasisText = emphasisItems.length > 0 ? `- **교수님 강조 사항:**\n${emphasisItems.map(item => `    - ${item}`).join('\n')}` : '';
+        const keywordsText = state.keywords ? `- **핵심 키워드:** 다음 키워드를 중심으로 내용을 전개해줘: "${state.keywords}"` : '';
+        const instructions = [emphasisText, keywordsText].filter(Boolean);
+        if (instructions.length === 0) return '';
+        return `## 세부 지침 (Detailed Instructions)\n${instructions.join('\n')}`;
+      },
+      sourceHandling: (state) => {
+        if (state.references) {
+          return `## 참고자료 활용 (Source Handling)\n- **참고 문헌 활용:** 아래 문헌들의 핵심 논지를 종합하고, 서로 비교/대조하여 논리를 강화해줘. 단순 요약은 지양해줘.\n  - 참고 문헌 리스트:\n${state.references.split('\n').filter(Boolean).map(line => `    - ${line.trim()}`).join('\n')}`;
+        }
+        return '';
+      },
+      selfCorrection: (state) => {
+        const authorLevel = getResolvedValue(state, 'authorLevel', dataMaps.authorLevel);
+        const tone = getResolvedValue(state, 'tone', dataMaps.tone);
+        return `## 자체 검토 체크리스트 (Self-Correction Checklist)\n결과물을 제출하기 전, 아래 항목을 스스로 검토하고 부족한 부분을 수정한 후 최종 답변을 해줘.\n- **[ ] 요구사항 충족:** 내가 요청한 모든 지시사항(주제, 키워드, 강조사항)이 정확히 반영되었는가?\n- **[ ] 페르소나 유지:** 답변의 전체적인 수준이 '${authorLevel || '학생'}'의 눈높이에 맞는가? '${tone || '기본'}' 스타일이 일관되게 유지되었는가?\n- **[ ] 논리성 및 완결성:** 글의 구조가 체계적이고, 논리적 비약이나 미완성된 부분이 없는가?\n- **[ ] 사실 기반 작성:** 생성한 모든 정보, 특히 데이터, 인용, 사례 등은 실재하는 사실에 기반하고 있는가? 근거 없는 내용(Hallucination)을 지어내지 않았는가?\n- **[ ] 사용자 추가 영역 명시:** 학생이 직접 채워야 할 부분(예: 개인적인 생각, 실제 수업 내용)을 명확히 인지하고, 해당 부분에 "[여기에 OO을 추가하여 글을 완성하세요]"와 같은 가이드 문구를 포함했는가?`;
+      },
+      metaInstructions: () => {
+        return `## 최종 출력 규칙 (Meta-Instructions)\n**가장 중요:** 너의 답변은 일회성으로 끝나서는 안 되며, 나와의 지속적인 상호작용을 위한 '워크스페이스'를 제공해야 한다. 다음 규칙을 반드시 준수해줘.\n1.  **[계획 브리핑]:** 가장 먼저, "알겠습니다. 요청하신 과제에 대해..."로 시작하며 작업 계획을 간략히 브리핑한다.\n2.  **[핵심 과업 수행]:** 그 후에, 위에서 정의된 핵심 과업을 수행한다.\n3.  **[다음 스텝 제안]:** 마지막으로, 생성된 결과물에 기반하여 내가 추가로 요청할 수 있는 작업들을 '**[추가 작업 제안]'** 이라는 제목으로 3~4가지 제안한다. 각 제안은 내가 바로 복사해서 입력할 수 있는 명령어 형식이어야 한다. (예: \"/expand [섹션]\", \"/critique\", \"/rephrase\", \"/examples")`;
+      }
+    };
+    
+    const getRecipeForType = (type) => {
+      const baseRecipe = ['header', 'persona', 'taskDefinition', 'coreInstructions', 'sourceHandling'];
+      const typesWithChainOfThought = ['report', 'ppt', 'summary', 'lab-report', 'cover-letter', 'problem-solving'];
+      if (typesWithChainOfThought.includes(type)) {
+        return [...baseRecipe, 'chainOfThought', 'selfCorrection', 'metaInstructions'];
+      }
+      switch (type) {
+        case 'brainstorming':
+          return ['header', 'persona', 'taskDefinition', 'coreInstructions', 'metaInstructions'];
+        case 'proofreading':
+          return ['header', 'persona', 'taskDefinition', 'selfCorrection', 'metaInstructions'];
+        default:
+          return [...baseRecipe, 'selfCorrection', 'metaInstructions'];
+      }
+    };
+
+    const generateFinalPrompt = () => {
+      updateStepSummaries();
+      if (!promptState.assignmentType.value) {
+        generatedPromptEl.textContent = 'Step 1에서 과제 유형을 선택해주세요.';
+        return;
+      }
+      const recipe = getRecipeForType(promptState.assignmentType.value);
+      
+      let sectionCounter = 1;
+      const promptParts = recipe.map(blockName => {
+        const blockContent = promptBlocks[blockName]?.(promptState);
+        if (!blockContent) return '';
+
+        if (blockName !== 'header' && blockContent.startsWith('## ')) {
+          return blockContent.replace('## ', `## ${sectionCounter++}. `);
+        }
+        
+        return blockContent;
+      });
+        
+      const finalPrompt = promptParts.filter(Boolean).join('\n\n');
+      generatedPromptEl.textContent = finalPrompt.replace(/(\n\s*){3,}/g, '\n\n').trim();
+
+      // Save to localStorage
+      const serializableState = { ...promptState, emphasis: { ...promptState.emphasis, selected: [...promptState.emphasis.selected] } };
+      localStorage.setItem('uniPromptState', JSON.stringify(serializableState));
+    };
+
+    const initializeFormFromState = () => {
+      // Restore assignmentType
+      const assignmentTypeGroup = document.querySelector('[data-group="assignmentType"]');
+      assignmentTypeGroup.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        if (btn.dataset.value === promptState.assignmentType.value) {
+          btn.classList.add('selected');
+        }
+      });
+      const assignmentTypeSelect = assignmentTypeGroup.querySelector('.choice-select-hybrid');
+      if (assignmentTypeSelect) {
+        assignmentTypeSelect.value = promptState.assignmentType.value;
+        const customInput = document.getElementById('assignmentTypeCustom');
+        if (promptState.assignmentType.value === 'custom') {
+          customInput.value = promptState.assignmentType.custom;
+          customInput.classList.add('visible');
+        } else {
+          customInput.classList.remove('visible');
+        }
+      }
+
+      // Restore authorLevel, lectureType, tone, majorField
+      ['authorLevel', 'lectureType', 'tone', 'majorField'].forEach(groupName => {
+        const group = document.querySelector(`[data-group="${groupName}"]`);
+        if (group) {
+          group.querySelectorAll('.option-btn').forEach(btn => {
+            btn.classList.remove('selected');
+            if (btn.dataset.value === promptState[groupName].value) {
+              btn.classList.add('selected');
+            }
+          });
+          const select = group.querySelector('.choice-select-hybrid') || document.getElementById(groupName);
           if (select) {
             select.value = promptState[groupName].value;
             const customInput = document.getElementById(`${groupName}Custom`);
@@ -330,235 +323,210 @@ document.addEventListener('DOMContentLoaded', () => {
               if (customInput) customInput.classList.remove('visible');
             }
           }
-      }
-    });
-
-    // Restore emphasis
-    const emphasisCheckboxes = document.querySelectorAll('input[name="emphasis"]');
-    emphasisCheckboxes.forEach(checkbox => {
-      checkbox.checked = promptState.emphasis.selected.has(checkbox.value);
-    });
-    const emphasisCustom = document.getElementById('emphasisCustom');
-    if (promptState.emphasis.custom) {
-      emphasisCustom.value = promptState.emphasis.custom;
-      // Ensure the 'custom' checkbox is checked if its value is present
-      const customEmphasisCheckbox = document.querySelector('input[name="emphasis"][value="custom"]');
-      if (customEmphasisCheckbox) customEmphasisCheckbox.checked = true;
-      emphasisCustom.classList.add('visible');
-    } else {
-      emphasisCustom.classList.remove('visible');
-    }
-
-    // Restore topic, keywords, references
-    formInputs.forEach(input => {
-      input.value = promptState[input.id];
-    });
-  };
-
-  const handleNavigation = (targetId, contentId) => {
-    // Update nav links
-    navLinks.forEach(link => {
-      link.classList.toggle('active', link.dataset.target === targetId && link.dataset.content === contentId);
-    });
-  
-    // Update views
-    views.forEach(view => {
-      view.classList.toggle('active', view.id === targetId);
-    });
-  
-    // Update content sections if content-viewer is active
-    if (targetId === 'content-viewer') {
-      contentSections.forEach(section => {
-        section.classList.toggle('active', section.id === `content-${contentId}`);
-      });
-    }
-  };
-
-  const navigateTo = (stepNum) => {
-    steps.forEach(step => step.classList.remove('active'));
-    document.getElementById(`step-${stepNum}`).classList.add('active');
-    
-    stepMarkers.forEach(marker => {
-      const markerStep = parseInt(marker.dataset.step, 10);
-      marker.classList.remove('active', 'completed');
-      if (markerStep < stepNum) {
-        marker.classList.add('completed');
-      } else if (markerStep === stepNum) {
-        marker.classList.add('active');
-      }
-    });
-    updateStepSummaries();
-  };
-
-  // --- 4. EVENT LISTENERS ---
-  const setupEventListeners = () => {
-    mainNav.addEventListener('click', (e) => {
-      e.preventDefault();
-      const link = e.target.closest('.nav-link');
-      if (link) {
-        const targetId = link.dataset.target;
-        const contentId = link.dataset.content || null;
-        handleNavigation(targetId, contentId);
-      }
-    });
-    
-    hybridOptionGroups.forEach(group => {
-      const groupName = group.dataset.group;
-      const buttons = group.querySelectorAll('.option-btn');
-      const select = group.querySelector('.choice-select-hybrid');
-  
-      if (groupName === 'assignmentType') {
-        const defaultButton = group.querySelector(`[data-value="${promptState.assignmentType.value}"]`);
-        if (defaultButton) defaultButton.classList.add('selected');
-      }
-
-      group.addEventListener('click', (e) => {
-        if (e.target.matches('.option-btn')) {
-          promptState[groupName].value = e.target.dataset.value;
-          buttons.forEach(btn => btn.classList.remove('selected'));
-          e.target.classList.add('selected');
-          if(select) select.value = "";
-          const customInput = document.getElementById(`${groupName}Custom`);
-          if(customInput) customInput.classList.remove('visible');
-          promptState[groupName].custom = '';
-          generateFinalPrompt();
+        } else { // Handle simple select for majorField if no hybrid group
+            const select = document.getElementById(groupName);
+            if (select) {
+              select.value = promptState[groupName].value;
+              const customInput = document.getElementById(`${groupName}Custom`);
+              if (promptState[groupName].value === 'custom') {
+                if (customInput) {
+                  customInput.value = promptState[groupName].custom;
+                  customInput.classList.add('visible');
+                }
+              } else {
+                if (customInput) customInput.classList.remove('visible');
+              }
+            }
         }
       });
-  
-      if (select) {
+
+      // Restore emphasis
+      const emphasisCheckboxes = document.querySelectorAll('input[name="emphasis"]');
+      emphasisCheckboxes.forEach(checkbox => {
+        checkbox.checked = promptState.emphasis.selected.has(checkbox.value);
+      });
+      const emphasisCustom = document.getElementById('emphasisCustom');
+      if (promptState.emphasis.custom) {
+        emphasisCustom.value = promptState.emphasis.custom;
+        // Ensure the 'custom' checkbox is checked if its value is present
+        const customEmphasisCheckbox = document.querySelector('input[name="emphasis"][value="custom"]');
+        if (customEmphasisCheckbox) customEmphasisCheckbox.checked = true;
+        emphasisCustom.classList.add('visible');
+      } else {
+        emphasisCustom.classList.remove('visible');
+      }
+
+      // Restore topic, keywords, references
+      formInputs.forEach(input => {
+        input.value = promptState[input.id];
+      });
+    };
+    
+    const navigateTo = (stepNum) => {
+      steps.forEach(step => step.classList.remove('active'));
+      document.getElementById(`step-${stepNum}`).classList.add('active');
+      
+      stepMarkers.forEach(marker => {
+        const markerStep = parseInt(marker.dataset.step, 10);
+        marker.classList.remove('active', 'completed');
+        if (markerStep < stepNum) {
+          marker.classList.add('completed');
+        } else if (markerStep === stepNum) {
+          marker.classList.add('active');
+        }
+      });
+      updateStepSummaries();
+    };
+
+    // --- 4. EVENT LISTENERS ---
+    const setupEventListeners = () => {
+      hybridOptionGroups.forEach(group => {
+        const groupName = group.dataset.group;
+        const buttons = group.querySelectorAll('.option-btn');
+        const select = group.querySelector('.choice-select-hybrid');
+    
+        if (groupName === 'assignmentType') {
+          const defaultButton = group.querySelector(`[data-value="${promptState.assignmentType.value}"]`);
+          if (defaultButton) defaultButton.classList.add('selected');
+        }
+
+        group.addEventListener('click', (e) => {
+          if (e.target.matches('.option-btn')) {
+            promptState[groupName].value = e.target.dataset.value;
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            e.target.classList.add('selected');
+            if(select) select.value = "";
+            const customInput = document.getElementById(`${groupName}Custom`);
+            if(customInput) customInput.classList.remove('visible');
+            promptState[groupName].custom = '';
+            generateFinalPrompt();
+          }
+        });
+    
+        if (select) {
+          select.addEventListener('change', () => {
+            promptState[groupName].value = select.value;
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            const customInput = document.getElementById(`${groupName}Custom`);
+            const isCustom = select.value === 'custom';
+            customInput.classList.toggle('visible', isCustom);
+            if (isCustom) { customInput.focus(); } 
+            else { customInput.value = ''; promptState[groupName].custom = ''; }
+            generateFinalPrompt();
+          });
+        }
+      });
+    
+      document.querySelectorAll('.choice-select:not(.choice-select-hybrid)').forEach(select => {
+        const groupName = select.id;
         select.addEventListener('change', () => {
-          promptState[groupName].value = select.value;
-          buttons.forEach(btn => btn.classList.remove('selected'));
-          const customInput = document.getElementById(`${groupName}Custom`);
-          const isCustom = select.value === 'custom';
-          customInput.classList.toggle('visible', isCustom);
-          if (isCustom) { customInput.focus(); } 
-          else { customInput.value = ''; promptState[groupName].custom = ''; }
+            promptState[groupName].value = select.value;
+            const customInput = document.getElementById(`${groupName}Custom`);
+            const isCustom = select.value === 'custom';
+            customInput.classList.toggle('visible', isCustom);
+            if (isCustom) { customInput.focus(); } 
+            else { customInput.value = ''; promptState[groupName].custom = ''; }
+            generateFinalPrompt();
+        });
+      });
+    
+      customInputs.forEach(input => {
+        const groupName = input.id.replace('Custom', '');
+        input.addEventListener('input', () => {
+          promptState[groupName].custom = input.value;
           generateFinalPrompt();
         });
-      }
-    });
-  
-    document.querySelectorAll('.choice-select:not(.choice-select-hybrid)').forEach(select => {
-      const groupName = select.id;
-      select.addEventListener('change', () => {
-          promptState[groupName].value = select.value;
-          const customInput = document.getElementById(`${groupName}Custom`);
-          const isCustom = select.value === 'custom';
-          customInput.classList.toggle('visible', isCustom);
-          if (isCustom) { customInput.focus(); } 
-          else { customInput.value = ''; promptState[groupName].custom = ''; }
-          generateFinalPrompt();
       });
-    });
-  
-    customInputs.forEach(input => {
-      const groupName = input.id.replace('Custom', '');
-      input.addEventListener('input', () => {
-        promptState[groupName].custom = input.value;
-        generateFinalPrompt();
-      });
-    });
-  
-    emphasisGroup.addEventListener('change', (e) => {
-      if (e.target.matches('input[type="checkbox"]')) {
-        const customInput = document.getElementById('emphasisCustom');
-        if (e.target.value === 'custom') {
-          customInput.classList.toggle('visible', e.target.checked);
-          if (!e.target.checked) {
-            customInput.value = '';
-            promptState.emphasis.custom = '';
+    
+      emphasisGroup.addEventListener('change', (e) => {
+        if (e.target.matches('input[type="checkbox"]')) {
+          const customInput = document.getElementById('emphasisCustom');
+          if (e.target.value === 'custom') {
+            customInput.classList.toggle('visible', e.target.checked);
+            if (!e.target.checked) {
+              customInput.value = '';
+              promptState.emphasis.custom = '';
+            }
+          }
+          if (e.target.checked) {
+            promptState.emphasis.selected.add(e.target.value);
+          } else {
+            promptState.emphasis.selected.delete(e.target.value);
           }
         }
-        if (e.target.checked) {
-          promptState.emphasis.selected.add(e.target.value);
-        } else {
-          promptState.emphasis.selected.delete(e.target.value);
-        }
-      }
-      generateFinalPrompt();
-    });
-    
-    document.getElementById('emphasisCustom').addEventListener('input', (e) => {
-      promptState.emphasis.custom = e.target.value;
-      generateFinalPrompt();
-    });
-    
-    formInputs.forEach(input => {
-      input.addEventListener('input', () => {
-        promptState[input.id] = input.value;
         generateFinalPrompt();
       });
-    });
-    
-    nextTo2Btn.addEventListener('click', () => navigateTo(2));
-    nextTo3Btn.addEventListener('click', () => navigateTo(3));
-    backTo1Btn.addEventListener('click', () => navigateTo(1));
-    backTo2Btn.addEventListener('click', () => navigateTo(2));
-  
-    copyButton.addEventListener('click', () => {
-      const textToCopy = generatedPromptEl.textContent;
-      if (!textToCopy || textToCopy.includes('입력 필요') || textToCopy.includes('선택 필요')) {
-        alert('프롬프트의 필수 항목을 모두 채워주세요.');
-        return;
-      }
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        copyButton.textContent = '복사 완료!';
-        setTimeout(() => { copyButton.textContent = '프롬프트 복사'; }, 2000);
+      
+      document.getElementById('emphasisCustom').addEventListener('input', (e) => {
+        promptState.emphasis.custom = e.target.value;
+        generateFinalPrompt();
       });
-    });
-
-    // Event listener for loading example prompts
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('load-example-btn')) {
-        const exampleKey = e.target.dataset.example;
-        const exampleData = promptExamples[exampleKey];
-        if (exampleData) {
-            // Deep copy exampleData into promptState
-            Object.assign(promptState, JSON.parse(JSON.stringify(exampleData)));
-            // Reconstruct Set for emphasis.selected as JSON.parse converts Set to Array
-            if (promptState.emphasis && Array.isArray(promptState.emphasis.selected)) {
-              promptState.emphasis.selected = new Set(promptState.emphasis.selected);
-            }
-
-            handleNavigation('uni-prompt-app', null); // Navigate to prompt builder
-            initializeFormFromState();
-            navigateTo(1); // Go to step 1
-            generateFinalPrompt(); // Generate prompt and save state
-        }
-      }
-    });
-
-  };
-
-  // --- 5. INITIALIZATION ---
-  const init = () => {
-    // Load state from local storage
-    const savedState = localStorage.getItem('uniPromptState');
-    if (savedState) {
-      const parsedState = JSON.parse(savedState);
-      // Reconstruct Set for emphasis.selected
-      if (parsedState.emphasis && Array.isArray(parsedState.emphasis.selected)) {
-        parsedState.emphasis.selected = new Set(parsedState.emphasis.selected);
-      }
-      Object.assign(promptState, parsedState);
-    }
+      
+      formInputs.forEach(input => {
+        input.addEventListener('input', () => {
+          promptState[input.id] = input.value;
+          generateFinalPrompt();
+        });
+      });
+      
+      nextTo2Btn.addEventListener('click', () => navigateTo(2));
+      nextTo3Btn.addEventListener('click', () => navigateTo(3));
+      backTo1Btn.addEventListener('click', () => navigateTo(1));
+      backTo2Btn.addEventListener('click', () => navigateTo(2));
     
-    startBtn.addEventListener('click', () => {
-      startScreen.style.display = 'none';
-      mainContainer.style.display = 'block';
-      initializeFormFromState();
-      navigateTo(1);
-      generateFinalPrompt();
-    });
+      copyButton.addEventListener('click', () => {
+        const textToCopy = generatedPromptEl.textContent;
+        if (!textToCopy || textToCopy.includes('입력 필요') || textToCopy.includes('선택 필요')) {
+          alert('프롬프트의 필수 항목을 모두 채워주세요.');
+          return;
+        }
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          copyButton.textContent = '복사 완료!';
+          setTimeout(() => { copyButton.textContent = '프롬프트 복사'; }, 2000);
+        });
+      });
+    };
 
-    // Set initial view based on hash
-    const initialHash = window.location.hash.substring(1);
-    const initialLink = document.querySelector(`.nav-link[data-content="${initialHash}"]`) || document.querySelector('.nav-link[data-target="uni-prompt-app"]');
-    handleNavigation(initialLink.dataset.target, initialLink.dataset.content);
+    // --- 5. INITIALIZATION ---
+    const init = () => {
+      // Load state from local storage
+      const savedState = localStorage.getItem('uniPromptState');
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        // Reconstruct Set for emphasis.selected
+        if (parsedState.emphasis && Array.isArray(parsedState.emphasis.selected)) {
+          parsedState.emphasis.selected = new Set(parsedState.emphasis.selected);
+        }
+        Object.assign(promptState, parsedState);
+      }
+      
+      if (startBtn) {
+          startBtn.addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            mainContainer.style.display = 'block';
+            initializeFormFromState();
+            navigateTo(1);
+            generateFinalPrompt();
+        });
+      }
+      
+      // Only run the prompt builder related init logic on the main page
+      if(mainContainer) {
+          initializeFormFromState();
+          generateFinalPrompt();
+          if (!localStorage.getItem('uniPromptState')) {
+              startScreen.style.display = 'flex';
+              mainContainer.style.display = 'none';
+          } else {
+              startScreen.style.display = 'none';
+              mainContainer.style.display = 'block';
+              navigateTo(1);
+          }
+      }
 
-    setupEventListeners();
-  };
+      setupEventListeners();
+    };
 
-  init();
+    init();
+  }
 });

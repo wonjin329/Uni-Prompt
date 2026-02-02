@@ -6,188 +6,21 @@
   <meta name="description" content="대학생 과제 효율을 극대화하는 AI 프롬프트 빌더 서비스. 리포트, PPT, 논문 요약 등 다양한 과제에 맞는 최적의 프롬프트를 생성하여 AI 활용도를 높여보세요.">
   <meta name="keywords" content="AI, 프롬프트, 프롬프트 엔지니어링, ChatGPT, Gemini, 대학생, 과제, 리포트, 글쓰기, 조교">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet">
-  <link href='/style.css?v=1.5' rel='stylesheet'>
-  <link href='/style-figures.css?v=1.5' rel='stylesheet'>
-  <style>
-    /* Comparison Slider Styles */
-    .slider-container {
-      width: 100%;
-      max-width: 800px;
-      margin: 2rem auto;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .comparison-item {
-      padding: 1.5rem 2rem;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-    .comparison-item h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-top: 0;
-      display: flex;
-      align-items: center;
-    }
-    .comparison-item p {
-      margin-bottom: 1rem;
-      color: #555;
-    }
-    .ai-answer {
-      border-top: 1px solid #eee;
-      padding-top: 1rem;
-      margin-top: 1rem;
-    }
-    .ai-answer h4 {
-      font-weight: 700;
-      color: #333;
-      margin-top: 0;
-    }
-    [slot="first"].comparison-item {
-      background: #f0f4ff;
-      border-left: 4px solid #4285f4;
-    }
-    [slot="first"] h3 {
-      color: #4285f4;
-    }
-    [slot="first"] h3::before {
-      content: '✨';
-      margin-right: 0.5rem;
-    }
-    [slot="first"] .ai-answer {
-      background: #fff;
-      padding: 1rem;
-      border-radius: 4px;
-      border: 1px solid #e0e0e0;
-    }
-    [slot="second"].comparison-item {
-      background: #f5f5f5;
-      border-left: 4px solid #ccc;
-    }
-    [slot="second"] h3 {
-      color: #757575;
-    }
-    [slot="second"] h3::before {
-      content: '❓';
-      margin-right: 0.5rem;
-    }
-    [slot="second"] .ai-answer {
-       opacity: 0.8;
-    }
-    img-comparison-slider {
-      --divider-width: 3px;
-      --divider-color: #4285f4;
-      --default-handle-color: #4285f4;
-    }
-
-    /* Prompt Library Styles */
-    .prompt-library-form {
-      background-color: #f7f9fc;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 2rem;
-      border: 1px solid #e0e0e0;
-    }
-    .prompt-library-form h3 {
-      text-align: center;
-      color: #1a237e;
-      margin-top: 0;
-    }
-    #prompt-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    #prompt-form textarea, #prompt-form input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
-    }
-    #prompt-form textarea:focus, #prompt-form input:focus {
-      border-color: #3f51b5;
-      outline: none;
-    }
-    #prompt-form button {
-      background-color: #3f51b5;
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      font-size: 1em;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    #prompt-form button:hover {
-      background-color: #303f9f;
-    }
-
-    .prompt-card {
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      transition: box-shadow 0.3s ease;
-    }
-    .prompt-card:hover {
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .prompt-card p:first-child {
-      font-size: 1.1em;
-      color: #333;
-      margin-top: 0;
-    }
-    .prompt-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1rem;
-      font-size: 0.9em;
-      color: #777;
-    }
-    .like-section {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .like-btn {
-      background: none;
-      border: 1px solid #ddd;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      cursor: pointer;
-      font-size: 1.2em;
-      transition: all 0.2s ease;
-    }
-    .like-btn:hover {
-      background-color: #f0f4ff;
-      border-color: #4285f4;
-    }
-    .like-btn.liked {
-      background-color: #fce4ec; /* A pinkish background */
-      border-color: #e91e63;
-      color: #e91e63;
-    }
-  </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5384449252320033"
+  <link href="/style.css?v=1.6" rel="stylesheet">
+  <link href="/style-figures.css?v=1.5" rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5384449252320033"
      crossorigin="anonymous"></script>
+  <meta name="google-site-verification" content="eQ9MkYwu9PPuoqwayTb3keEI4FgwMVsreRfBPTNoqds" />
 </head>
 <body>
   <header class="main-header">
-    <div class="logo">Uni-Prompt</div>
+    <div class="logo"><a href="/index.html" style="text-decoration: none; color: inherit;">Uni-Prompt</a></div>
     <nav class="main-nav">
-      <a href="#app" class="nav-link active" data-target="uni-prompt-app">프롬프트 빌더</a>
-      <a href="#about" class="nav-link" data-target="content-viewer" data-content="about">서비스 소개</a>
-      <a href="#how-to" class="nav-link" data-target="content-viewer" data-content="how-to">사용 방법</a>
-      <a href="#examples" class="nav-link" data-target="content-viewer" data-content="examples">프롬프트 라이브러리</a>
-      <a href="#tips" class="nav-link" data-target="content-viewer" data-content="tips">활용 팁</a>
+      <a href="/index.html" class="nav-link">프롬프트 빌더</a>
+      <a href="/blog.html" class="nav-link">블로그</a>
+      <a href="/tips.html" class="nav-link">활용 팁</a>
+      <a href="/about.html" class="nav-link">서비스 소개</a>
+      <a href="/contact.html" class="nav-link">문의하기</a>
     </nav>
   </header>
 
@@ -362,151 +195,15 @@
         </div>
       </div>
     </section>
-
-    <section id="content-viewer" class="view">
-        <article id="content-about" class="container content-section">
-            <h2>Uni-Prompt, 왜 만들었을까요?</h2>
-            <p>대학생의 삶은 과제의 연속입니다. 하지만 <strong>'좋은 질문'</strong>이 <strong>'좋은 답변'</strong>을 만든다는 사실을 모른 채, 우리는 종종 AI에게 막연한 질문을 던지고는 합니다.</p>
-            
-            <div class="problem-solution-figure">
-              <div class="figure-box problem">
-                <div class="figure-title">막연한 질문</div>
-                <div class="figure-content">"리포트 써줘"</div>
-              </div>
-              <div class="figure-arrow">→</div>
-              <div class="figure-box problem-result">
-                <div class="figure-title">기대 이하의 결과</div>
-                <div class="figure-content">"목차도 없고, 내용도 부실하네..."</div>
-              </div>
-            </div>
-
-            <p><strong>Uni-Prompt</strong>는 바로 이 문제를 해결하기 위해 탄생했습니다. 이 서비스는 몇 가지 핵심 정보를 입력하는 것만으로, AI가 학생 여러분의 의도를 정확히 파악하고 전공 지식과 강의 특성까지 고려한 <strong>'개인 맞춤형 프롬프트'</strong>를 생성해 줍니다.</p>
-
-            <div class="problem-solution-figure">
-              <div class="figure-box solution">
-                <div class="figure-title">Uni-Prompt 활용</div>
-                <div class="figure-content">체계적 정보 입력</div>
-              </div>
-              <div class="figure-arrow">→</div>
-              <div class="figure-box solution-result">
-                <div class="figure-title">똑똑한 AI 튜터의 답변</div>
-                <div class="figure-content">"요구사항이 모두 반영된 리포트 초안"</div>
-              </div>
-            </div>
-
-            <img-comparison-slider class="slider-container">
-              <div slot="second" class="comparison-item">
-                <h3>일반 질문</h3>
-                <p>"기후 위기에 대한 리포트 써줘"</p>
-                <div class="ai-answer">
-                  <h4>AI 답변</h4>
-                  <p>기후 위기는 전 지구적 문제입니다. 온실가스 배출로 인해 지구의 온도가 상승하고 있으며, 해수면 상승, 극심한 기상 현상 등의 원인이 됩니다. (교과서적인 나열, 출처 없음, 일반적인 서론)</p>
-                </div>
-              </div>
-              <div slot="first" class="comparison-item">
-                <h3>Uni-Prompt 질문</h3>
-                <p>"환경공학 전공 3학년 수준에서 최근 3년간의 탄소 포집 기술(CCUS) 데이터를 포함하여, APA 양식의 참고문헌을 갖춘 비판적 리포트 초안을 작성해줘"</p>
-                <div class="ai-answer">
-                  <h4>AI 답변</h4>
-                  <p><strong>1. 서론</strong><br>
-                  ...최근 3년간 CCUS 기술은...<br>
-                  <strong>2. 본론</strong><br>
-                  ...구체적 수치, 논리적 목차, 전문 용어 활용...<br>
-                  <strong>3. 참고문헌 (APA 양식)</strong><br>
-                  ...</p>
-                </div>
-              </div>
-            </img-comparison-slider>
-
-            <p>더 이상 막막한 과제 앞에서 고민하지 마세요. Uni-Prompt와 함께라면 AI를 여러분의 <strong>'똑똑한 전공 튜터'</strong>로 만들 수 있습니다.</p>
-        </article>
-  
-              <article id="content-how-to" class="container content-section">
-                <h2>어떻게 사용하나요?</h2>
-                <div class="minimal-how-to">
-                  <div class="how-to-step">
-                    <div class="step-number-minimal">01</div>
-                    <div class="step-content-minimal">
-                      <h3>과제 유형 선택</h3>
-                      <p>리포트, PPT 개요, 논문 요약 등 해야 할 과제의 종류를 명확히 선택합니다.</p>
-                    </div>
-                  </div>
-                  <div class="how-to-step">
-                    <div class="step-number-minimal">02</div>
-                    <div class="step-content-minimal">
-                      <h3>페르소나 &amp; 스타일 설정</h3>
-                      <p>AI가 여러분의 학년, 전공, 원하는 글쓰기 스타일을 이해하도록 페르소나를 설정합니다.</p>
-                    </div>
-                  </div>
-                  <div class="how-to-step">
-                    <div class="step-number-minimal">03</div>
-                    <div class="step-content-minimal">
-                      <h3>필수 정보 입력</h3>
-                      <p>과제의 구체적인 주제, 핵심 키워드, 교수님 강조 사항 등 구체적인 정보를 제공합니다.</p>
-                    </div>
-                  </div>
-                  <div class="how-to-step">
-                    <div class="step-number-minimal">04</div>
-                    <div class="step-content-minimal">
-                      <h3>프롬프트 생성 및 활용</h3>
-                      <p>생성된 최적화된 프롬프트를 복사하여 AI에 붙여넣고 놀라운 결과물을 확인합니다.</p>
-                    </div>
-                  </div>
-                </div>
-              </article>  
-
-      <article id="content-examples" class="container content-section">
-        <h2>프롬프트 라이브러리</h2>
-        <p>다른 사람들은 어떤 프롬프트를 사용하는지 확인하고, 나만의 프롬프트를 공유해보세요!</p>
-
-        <div class="prompt-library-form">
-          <h3>나만의 프롬프트 공유하기</h3>
-          <form id="prompt-form">
-            <textarea id="prompt-text" placeholder="여기에 프롬프트를 입력하세요..." required></textarea>
-            <input type="text" id="author-name" placeholder="작성자 이름 (선택 사항)">
-            <button type="submit">공유하기</button>
-          </form>
-        </div>
-
-        <div id="prompt-list"></div>
-      </article>
-        
-        <article id="content-tips" class="container content-section">
-          <h2>AI 활용도를 200% 높이는 팁</h2>
-          <div class="tips-grid">
-            <div class="tip-card">
-              <div class="tip-icon">👤</div>
-              <h3 class="tip-title">역할 부여하기</h3>
-              <p class="tip-description">'마케팅 전문가'처럼 구체적인 역할을 부여하면 AI의 답변이 훨씬 전문적으로 변합니다.</p>
-            </div>
-            <div class="tip-card">
-              <div class="tip-icon">👍</div>
-              <h3 class="tip-title">긍정적 언어 사용</h3>
-              <p class="tip-description">'~하지 마세요' 보다는 '~를 포함하여 작성해 주세요'와 같이 명확하고 긍정적인 지시가 더 좋은 결과를 만듭니다.</p>
-            </div>
-            <div class="tip-card">
-              <div class="tip-icon">🔢</div>
-              <h3 class="tip-title">단계별로 질문하기</h3>
-              <p class="tip-description">복잡한 과제는 '자료 조사', '개요 작성' 등 단계별로 나누어 질문하면 AI가 각 단계에 더 집중할 수 있습니다.</p>
-            </div>
-            <div class="tip-card">
-              <div class="tip-icon">📋</div>
-              <h3 class="tip-title">예시 제공하기</h3>
-              <p class="tip-description">원하는 결과물의 스타일이나 형식이 있다면, 간단한 예시를 함께 제공하는 것이 가장 효과적인 방법 중 하나입니다.</p>
-            </div>
-          </div>
-        </article>
-      </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Uni-Prompt. All Rights Reserved. | <a href="privacy.html">개인정보처리방침</a> | <a href="terms.html">이용약관</a></p>
+    <p>&copy; 2026 Uni-Prompt. All Rights Reserved. | <a href="/privacy.html">개인정보처리방침</a> | <a href="/terms.html">이용약관</a></p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script defer type="text/javascript" src="/main.js?v=1.5"></script>
+  <script defer type="text/javascript" src="/main.js?v=1.6"></script>
   <script defer type="text/javascript" src="/comparison-slider.js"></script>
   <script src="/supabase-client.js"></script>
-  <script src="/prompt-library.js"></script>
 </body>
 </html>

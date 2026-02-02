@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>좋은 프롬프트의 조건: 원하는 답변을 얻어내는 5가지 핵심 원칙 - Uni-Prompt 블로그</title>
+  <meta name="description" content="AI로부터 정확하고 깊이 있는 답변을 얻어내는 프롬프트 엔지니어링의 5가지 핵심 원칙을 소개합니다. 역할 부여, 명확한 지시, 구체적인 맥락 제공 등 좋은 질문의 기술을 배워보세요.">
+  <meta name="keywords" content="프롬프트, 프롬프트 엔지니어링, AI, ChatGPT, 좋은 질문, 글쓰기, AI 활용">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <link href="/style.css?v=1.6" rel="stylesheet">
+  <link href="/style-figures.css?v=1.5" rel="stylesheet">
+  <meta name="google-site-verification" content="eQ9MkYwu9PPuoqwayTb3keEI4FgwMVsreRfBPTNoqds" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5384449252320033"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo"><a href="/index.html" style="text-decoration: none; color: inherit;">Uni-Prompt</a></div>
+    <nav class="main-nav">
+      <a href="/index.html" class="nav-link">프롬프트 빌더</a>
+      <a href="/blog.html" class="nav-link">블로그</a>
+      <a href="/tips.html" class="nav-link">활용 팁</a>
+      <a href="/about.html" class="nav-link">서비스 소개</a>
+      <a href="/contact.html" class="nav-link">문의하기</a>
+    </nav>
+  </header>
+
+  <main id="app-body">
+    <section class="container article-container">
+      <div class="article-header">
+        <h1>좋은 프롬프트의 조건: 원하는 답변을 얻어내는 5가지 핵심 원칙</h1>
+        <p class="article-meta">게시일: 2026년 2월 2일</p>
+      </div>
+      
+      <article class="article-content">
+        <p>AI의 성능이 아무리 뛰어나도, '어떻게 질문하는지'에 따라 답변의 질은 하늘과 땅 차이로 달라집니다. "쓰레기를 넣으면 쓰레기가 나온다(Garbage in, garbage out)"는 컴퓨터 과학의 오랜 격언은 AI 시대에도 여전히 유효합니다. AI로부터 최고의 결과물을 얻어내기 위한 '좋은 프롬프트'의 5가지 핵심 원칙을 소개합니다.</p>
+
+        <h2>원칙 1: 명확한 역할(Persona) 부여하기</h2>
+        <p>AI에게 구체적인 역할과 정체성을 부여하면, 답변의 전문성과 톤앤매너가 놀랍도록 달라집니다. 막연한 비서가 아닌, 특정 분야의 전문가로서 답변하도록 역할을 지정해주세요.</p>
+        <blockquote>
+          <p><strong>나쁜 예:</strong> "마케팅 전략 좀 알려줘."<br><br>
+          <strong>좋은 예:</strong> "당신은 10년차 IT 스타트업 마케팅 총괄 책임자(CMO)입니다. 저희 회사는 이번에 새로운 AI 기반 교육 앱을 출시했습니다. 타겟 고객은 20대 대학생이며, 초기 인지도 확보를 위한 가장 효과적인 디지털 마케팅 전략 3가지를 구체적인 실행 방안과 함께 제안해주세요."</p>
+        </blockquote>
+
+        <h2>원칙 2: 구체적인 맥락(Context)과 배경 정보 제공하기</h2>
+        <p>AI는 당신의 상황이나 과제의 요구사항을 전혀 모릅니다. 충분한 배경 정보를 제공해야만 당신의 의도에 맞는 답변을 생성할 수 있습니다.</p>
+        <blockquote>
+          <p><strong>나쁜 예:</strong> "이순신에 대해 설명해줘."<br><br>
+          <strong>좋은 예:</strong> "저는 한국사를 처음 배우는 외국인 대학생입니다. 이순신 장군이 한국 역사에서 왜 중요한 인물인지, 그의 가장 큰 업적은 무엇인지, 그리고 그의 리더십 스타일이 현대 사회에 주는 교훈은 무엇인지 중학생도 이해할 수 있도록 쉽게 설명해주세요."</p>
+        </blockquote>
+
+        <h2>원칙 3: 명확한 목표(Task)와 출력 형식(Format) 지정하기</h2>
+        <p>AI가 수행해야 할 과업이 무엇인지, 그리고 어떤 형식으로 결과물을 원하는지 명확하게 정의해야 합니다. 리포트, 이메일, 코드, 표, JSON 등 원하는 출력 형식을 구체적으로 명시하세요.</p>
+        <blockquote>
+          <p><strong>나쁜 예:</strong> "장점과 단점을 비교해줘."<br><br>
+          <strong>좋은 예:</strong> "전기차와 내연기관차의 장점과 단점을 비교하는 표(Table)를 만들어줘. 비교 항목은 '초기 구매 비용', '유지비', '친환경성', '충전/주유 편의성', '가속 성능'으로 구성해줘. 각 항목에 대해 2~3문장으로 간결하게 설명해줘."</p>
+        </blockquote>
+
+        <h2>원칙 4: 단계별(Step-by-step)로 지시하고, 생각할 시간을 주기</h2>
+        <p>복잡한 문제를 한 번에 해결하도록 요구하기보다, 여러 단계로 나누어 순차적으로 질문하는 것이 더 좋은 결과를 가져옵니다. AI가 각 단계에 집중하여 깊이 있는 결과물을 생성하도록 유도할 수 있습니다.</p>
+        <blockquote>
+          <p><strong>예시:</strong><br>
+          "1. 먼저, '양자 컴퓨팅'의 기본 원리에 대해 설명해줘.<br>
+          2. 다음으로, 양자 컴퓨팅이 현재 컴퓨터와 어떻게 다른지 비교해줘.<br>
+          3. 마지막으로, 양자 컴퓨팅 기술이 미래 사회를 어떻게 변화시킬 수 있을지 5가지 예측을 제시해줘."</p>
+        </blockquote>
+
+        <h2>원칙 5: 예시(Example)를 통해 원하는 결과 보여주기</h2>
+        <p>원하는 결과물의 스타일이나 톤, 구조가 명확하다면 직접 예시를 보여주는 것이 가장 효과적입니다. AI는 당신이 제공한 예시를 학습하여 비슷한 스타일의 결과물을 생성합니다. 이를 '퓨샷 프롬프팅(Few-shot Prompting)'이라고 합니다.</p>
+        <blockquote>
+          <p><strong>예시:</strong><br>
+          "아래는 우리 회사 제품에 대한 고객 후기야. 이와 비슷한 톤앤매너로 긍정적인 고객 후기를 3개 더 작성해줘.<br><br>
+          [예시 후기]<br>
+          'Uni-Prompt 덕분에 리포트 쓰는 시간이 반으로 줄었어요! 아이디어를 정리하고 구조를 잡는 데 정말 큰 도움이 되네요. 대학생 필수 앱이에요!'"</p>
+        </blockquote>
+        <p>이 5가지 원칙을 기억하고 프롬프트를 작성한다면, AI를 단순한 검색 엔진이 아닌 진정한 의미의 '지능형 파트너'로 활용할 수 있을 것입니다. 저희 Uni-Prompt는 바로 이런 '좋은 프롬프트'를 더 쉽고 체계적으로 만들 수 있도록 돕는 서비스입니다.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Uni-Prompt. All Rights Reserved. | <a href="/privacy.html">개인정보처리방침</a> | <a href="/terms.html">이용약관</a> | <a href="/contact.html">문의하기</a></p>
+  </footer>
+</body>
+</html>
